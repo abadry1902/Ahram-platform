@@ -11,7 +11,7 @@ export async function generateMetadata({params}:{params:Promise<{locale:string;s
  const {data:live}=db?await db.from("articles").select("slug,title_ar,title_en,excerpt_ar,excerpt_en").eq("slug",slug).eq("status","published").maybeSingle():{data:null};
  const title=locale==="en"?(live?.title_en||fallback?.enTitle):(live?.title_ar||fallback?.arTitle);
  const description=locale==="en"?(live?.excerpt_en||fallback?.enExcerpt):(live?.excerpt_ar||fallback?.arExcerpt);
- const root=(process.env.NEXT_PUBLIC_SITE_URL||"http://localhost:3000").replace(/\\/$/,"");
+ const root=(process.env.NEXT_PUBLIC_SITE_URL||"http://localhost:3000").replace(/\/$/,"");
  return {title:title||"Legal insights",description:description||"",alternates:{canonical:`${root}/${locale}/articles/${slug}`,languages:{ar:`${root}/ar/articles/${slug}`,en:`${root}/en/articles/${slug}`}}};
 }
 export default async function ArticlePage({params}:{params:Promise<{locale:string;slug:string}>}){
