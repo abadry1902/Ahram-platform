@@ -14,6 +14,7 @@ jobs:
           node-version: '22'
       - run: npm install --package-lock-only --ignore-scripts
       - run: npm ci
+      - run: npm run test:smoke
       - run: npm run typecheck
       - run: npm run build
         env:
