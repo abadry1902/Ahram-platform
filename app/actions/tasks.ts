@@ -21,13 +21,15 @@ export async function createTask(data:FormData){
 export async function setStatus(data:FormData){
  const {db}=await requireUser();const taskId=trimmed(data,"task_id");const status=trimmed(data,"status");const reason=trimmed(data,"reason");
  if(!uid.safeParse(taskId).success || !["new","in_progress","paused","awaiting_review","done","expired"].includes(status))return;
- await db.rpc("set_task_status_secure",{p_task_id:taskId,p_status:status,p_reason:reason||null});
+ const {error}=await db.rpc("set_task_status_secure",{p_task_id:taskId,p_status:status,p_reason:reason||null});
+ if(error)redirect(`/app/tasks/${taskId}?error=status`);
  revalidatePath(`/app/tasks/${taskId}`);revalidatePath("/app");
 }
 export async function setOverallProgress(data:FormData){
  const {db}=await requireUser();const taskId=trimmed(data,"task_id");const progress=Number(data.get("progress"));
  if(!uid.safeParse(taskId).success || !Number.isInteger(progress)||progress<0||progress>100)return;
- await db.rpc("set_overall_progress_secure",{p_task_id:taskId,p_progress:progress});
+ const {error}=await db.rpc("set_overall_progress_secure",{p_task_id:taskId,p_progress:progress});
+ if(error)redirect(`/app/tasks/${taskId}?error=progress`);
  revalidatePath(`/app/tasks/${taskId}`);
 }
 export async function setMyProgress(data:FormData){
