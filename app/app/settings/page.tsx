@@ -1,0 +1,2 @@
+import {requireUser} from "@/lib/auth";
+export default async function Settings(){const {profile,user}=await requireUser();return <><div className="title-row"><div><span className="eyebrow">ACCOUNT</span><h1>الإعدادات</h1></div></div><div className="card" style={{maxWidth:680}}><h2>ملف الحساب</h2><p><b>الاسم:</b> {profile.full_name}</p><p><b>البريد الإلكتروني:</b> {user.email}</p><p><b>الصلاحية:</b> {profile.role}</p><p className="notice">تُدار كلمة المرور وسياسات المصادقة عبر خدمة Supabase Auth. يوصى بتفعيل MFA قبل تشغيل النظام على بيانات حقيقية.</p></div></>;}
