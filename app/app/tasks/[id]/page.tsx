@@ -1,3 +1,4 @@
+import {uploadOperationalAttachment} from "@/app/actions/attachments";
 import {notFound} from "next/navigation";
 import {requireUser} from "@/lib/auth";
 import {TaskStatusBadge,Progress} from "@/components/task-status";
@@ -5,8 +6,8 @@ import {setStatus,setOverallProgress,setMyProgress,postTaskNote,addTaskStep,togg
 import {formatDate} from "@/lib/i18n";
 import type {Task,TaskStatus} from "@/lib/types";
 import Link from "next/link";
-export default async function TaskDetail({params}:{params:Promise<{id:string}>}){
- const {id}=await params;
+export default async function TaskDetail({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{attachment_error?:string;error?:string}>}){
+ const {id}=await params;const alerts=await searchParams;
  const {db,user,profile}=await requireUser();
  const {data:task,error}=await db.from("tasks").select("*").eq("id",id).maybeSingle();
  if(error||!task)notFound();
@@ -24,14 +25,20 @@ export default async function TaskDetail({params}:{params:Promise<{id:string}>})
  const supervisor=profile.role==="supervisor";
  const closed=["done","expired"].includes(t.status);
  const my=(assignments||[]).find(x=>x.user_id===user.id);
+ const {data:attachments}=await db.from("task_attachments").select("id,filename,storage_path,byte_size,created_at").eq("task_id",id).order("created_at",{ascending:false});
+ const signed=await Promise.all((attachments||[]).map(async f=>({id:f.id,name:f.filename,size:f.byte_size,url:(await db.storage.from("task-ops").createSignedUrl(f.storage_path,300)).data?.signedUrl||null})));
  const completedIds=new Set((completions||[]).filter(x=>x.user_id===user.id).map(x=>x.step_id));
  return <><div className="title-row"><div><Link href="/app/tasks" className="muted tiny">← جميع المهام</Link><h1 style={{marginTop:8}}>{t.title}</h1><div style={{display:"flex",gap:12,flexWrap:"wrap",alignItems:"center"}}><TaskStatusBadge status={t.status}/><span className="muted tiny">رقم المهمة: {id.slice(0,8).toUpperCase()}</span></div></div></div>
- <div className="details-grid"><div className="vertical-stack">
+ {alerts.attachment_error&&<p className="notice warning" role="alert">تعذر رفع المرفق. تحقق من النوع والحجم والصلاحيات.</p>}{alerts.error&&<p className="notice warning" role="alert">تعذر تحديث الحالة. تحقق من صلاحيتك وشروط الانتقال.</p>}<div className="details-grid"><div className="vertical-stack">
  <section className="card"><h2>التفاصيل</h2><p>{t.description||"لا يوجد وصف إضافي."}</p><div className="grid" style={{gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))"}}><div><small className="muted">الأولوية</small><div>{({low:"منخفضة",medium:"متوسطة",high:"عالية",urgent:"عاجلة"} as Record<string,string>)[t.priority]}</div></div><div><small className="muted">تاريخ الإنشاء</small><div>{formatDate(t.created_at)}</div></div><div><small className="muted">موعد التسليم</small><div>{formatDate(t.due_at)}</div></div><div><small className="muted">قائد المهمة</small><div>{t.leader_id?names.get(t.leader_id)||"—":"المشرف العام"}</div></div></div>{t.pause_reason&&<p className="notice warning">سبب التوقف: {t.pause_reason}</p>}{t.closure_reason&&<p className="notice warning">سبب الانقضاء: {t.closure_reason}</p>}</section>
  <section className="card"><div className="title-row"><h2 style={{margin:0}}>الخطوات والمراحل</h2><span className="tiny muted">علامة الإتمام شخصية لكل موظف</span></div>
  {(steps||[]).length?(steps||[]).map(s=><form key={s.id} action={toggleStep} style={{borderBottom:"1px solid #e8edf5",padding:"11px 0",display:"flex",gap:12,alignItems:"center"}}><input type="hidden" name="task_id" value={id}/><input type="hidden" name="step_id" value={s.id}/><button disabled={closed} className="button outline" style={{padding:"5px 11px"}} aria-label={completedIds.has(s.id)?"إلغاء إكمال الخطوة":"إنهاء الخطوة"}>{completedIds.has(s.id)?"✓":"○"}</button><span>{s.title}</span>{s.stage_name&&<span className="pill">{s.stage_name}</span>}</form>):<p className="muted">لم تُضف خطوات بعد.</p>}
  {supervisor&&!closed&&<form action={addTaskStep} style={{display:"flex",gap:8,marginTop:15,flexWrap:"wrap"}}><input type="hidden" name="task_id" value={id}/><input className="input" required minLength={3} maxLength={180} name="title" placeholder="خطوة جديدة" style={{flex:1}}/><button className="button alt">إضافة خطوة</button></form>}</section>
  <section className="card"><h2>ملاحظات الفريق</h2><p className="muted tiny">كل المكلفين بهذه المهمة فقط يمكنهم رؤية الملاحظات وتقدم بعضهم.</p><div style={{display:"grid",gap:12,marginBottom:22}}>{(notes||[]).map(n=><div key={n.id} style={{borderBottom:"1px solid var(--line)",paddingBottom:10}}><b>{names.get(n.author_id)||"عضو الفريق"}</b><small className="muted" style={{marginInlineStart:12}}>{formatDate(n.created_at)}</small><p style={{whiteSpace:"pre-wrap",margin:"6px 0"}}>{n.body}</p></div>)}{!(notes||[]).length&&<p className="muted">لا توجد ملاحظات بعد.</p>}</div><form action={postTaskNote}><input type="hidden" name="task_id" value={id}/><textarea className="input" aria-label="أضف ملاحظة للفريق" name="body" required minLength={1} maxLength={3000} placeholder="أضف ملاحظة أو تحديثًا يراه المشاركون في المهمة..."/><button className="button alt" style={{marginTop:10}}>إضافة ملاحظة</button></form></section>
+ <section className="card"><h2>المرفقات التشغيلية</h2><p className="notice warning tiny">مرفقات غير سرية فقط (PDF, JPG, PNG، بحد أقصى 5MB). لا ترفع مستندات قضايا أو بيانات عملاء حساسة.</p>
+ {signed.map(f=><div key={f.id} style={{padding:"8px 0"}}>{f.url?<a href={f.url} target="_blank" rel="noopener noreferrer" style={{color:"var(--blue)"}}>📎 {f.name}</a>:<span>{f.name} (غير متاح)</span>} <small className="muted">({Math.ceil(f.size/1024)} KB)</small></div>)}
+ {!signed.length&&<p className="muted">لا توجد مرفقات.</p>}
+ {!closed&&<form action={uploadOperationalAttachment} encType="multipart/form-data"><input type="hidden" name="task_id" value={id}/><label className="form-field">إضافة مرفق تشغيلي<input className="input" type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" required/></label><button className="button alt">رفع المرفق</button></form>}</section>
  <section className="card"><h2>سجل الحالات</h2>{(history||[]).map(h=><div key={h.id} style={{borderBottom:"1px solid var(--line)",padding:"10px 0"}}><strong>{names.get(h.changed_by)||"عضو الفريق"}</strong> ← <TaskStatusBadge status={h.next_status as TaskStatus}/><small className="muted" style={{marginInlineStart:12}}>{formatDate(h.changed_at)}</small>{h.reason&&<p className="tiny">السبب: {h.reason}</p>}</div>)}{!(history||[]).length&&<p className="muted">لم تُسجل انتقالات حالة بعد.</p>}</section>
  </div><aside className="vertical-stack">
  <div className="card"><h2>التقدم العام</h2><strong style={{color:"var(--blue)",fontSize:32}}>{t.progress}%</strong><Progress value={t.progress}/>{leader&&!closed&&<form action={setOverallProgress} style={{marginTop:17}}><input type="hidden" name="task_id" value={id}/><label className="form-field">تحديث نسبة التقدم العامة<input type="number" min="0" max="100" name="progress" defaultValue={t.progress} className="input"/></label><button className="button alt">حفظ التقدم</button></form>}{!leader&&<p className="muted tiny">نسبة التقدم العامة يغيرها قائد المهمة أو المشرف فقط.</p>}</div>
