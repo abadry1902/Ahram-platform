@@ -19,6 +19,12 @@ export const officialLinks = [
   {nameAr:"بوابة مصر الرقمية", nameEn:"Digital Egypt Portal", descriptionAr:"خدمات حكومية رقمية.", descriptionEn:"Online public services.", category:"services", href:"https://digital.gov.eg/"},
   {nameAr:"وزارة العدل المصرية", nameEn:"Egyptian Ministry of Justice", descriptionAr:"الموقع الرسمي للوزارة.", descriptionEn:"Official ministry website.", category:"justice", href:"https://moj.gov.eg/"},
   {nameAr:"الهيئة العامة للاستثمار", nameEn:"General Authority for Investment", descriptionAr:"معلومات الاستثمار وتأسيس الشركات.", descriptionEn:"Investment and company formation.", category:"business", href:"https://www.gafi.gov.eg/"},
-  {nameAr:"مصلحة الضرائب المصرية", nameEn:"Egyptian Tax Authority", descriptionAr:"خدمات ومعلومات ضريبية.", descriptionEn:"Tax information and services.", category:"business", href:"https://www.eta.gov.eg/"}
+  {nameAr:"مصلحة الضرائب المصرية", nameEn:"Egyptian Tax Authority", descriptionAr:"خدمات ومعلومات ضريبية.", descriptionEn:"Tax information and services.", category:"business", href:"https://www.eta.gov.eg/"},
+  {nameAr:"محكمة النقض المصرية", nameEn:"Egyptian Court of Cassation", descriptionAr:"الأحكام والمبادئ القضائية والبحث القانوني.", descriptionEn:"Court judgments, principles and legal research.",category:"justice",href:"https://cc.gov.eg/"},
+  {nameAr:"وزارة الداخلية المصرية",nameEn:"Egyptian Ministry of Interior",descriptionAr:"معلومات الخدمات الشرطية والأحوال المدنية.",descriptionEn:"Interior ministry services and information.",category:"services",href:"https://www.moi.gov.eg/"},
+  {nameAr:"الهيئة القومية للتأمين الاجتماعي",nameEn:"National Organization for Social Insurance",descriptionAr:"خدمات التأمينات الاجتماعية.",descriptionEn:"Social insurance information and services.",category:"services",href:"https://www.nosi.gov.eg/"},
+  {nameAr:"وزارة العمل المصرية",nameEn:"Egyptian Ministry of Labour",descriptionAr:"الخدمات والمعلومات المتعلقة بالعمل.",descriptionEn:"Employment and labor resources.",category:"business",href:"https://www.labour.gov.eg/"},
+  {nameAr:"دليل خدمات الأحوال المدنية",nameEn:"Civil Status Services Directory",descriptionAr:"الخدمات الإلكترونية للأحوال المدنية عبر وزارة الداخلية.",descriptionEn:"Civil status online services directory.",category:"services",href:"https://www.moi.gov.eg/home/directoryservices"},
+  {nameAr:"البحث في أحكام محكمة النقض",nameEn:"Court of Cassation Judgments Search",descriptionAr:"البحث في أحكام ومبادئ المحكمة.",descriptionEn:"Search decisions and legal principles.",category:"justice",href:"https://cc.gov.eg/judgments_search/"}
 ];
 // Confirm external official URLs before launch; public availability can change.
