@@ -38,6 +38,17 @@ export async function setMyProgress(data:FormData){
  await db.from("task_assignments").update({progress,updated_at:new Date().toISOString()}).eq("task_id",taskId).eq("user_id",user.id);
  revalidatePath(`/app/tasks/${taskId}`);
 }
+export async function setMyStatus(data:FormData){
+ const {db,user}=await requireUser();const taskId=trimmed(data,"task_id");
+ const status=trimmed(data,"status");const pause=trimmed(data,"reason");
+ if(!uid.safeParse(taskId).success||!["new","in_progress","paused","completed"].includes(status))return;
+ if(status==="paused"&&pause.length<5)redirect(`/app/tasks/${taskId}?error=pause`);
+ const {error}=await db.from("task_assignments")
+  .update({status,pause_reason:status==="paused"?pause:null,updated_at:new Date().toISOString()})
+  .eq("task_id",taskId).eq("user_id",user.id);
+ if(error)redirect(`/app/tasks/${taskId}?error=personal`);
+ revalidatePath(`/app/tasks/${taskId}`);
+}
 export async function postTaskNote(data:FormData){
  const {db,user}=await requireUser();const taskId=trimmed(data,"task_id");const body=trimmed(data,"body");
  if(!uid.safeParse(taskId).success||body.length<1||body.length>3000)return;
