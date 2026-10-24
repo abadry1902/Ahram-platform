@@ -1,0 +1,24 @@
+import type { Locale } from "@/lib/i18n";
+
+export const services = [
+  {id:"corporate", icon:"landmark", ar:"الشركات والاستثمار", en:"Corporate & Investment", arText:"تأسيس الشركات، العقود التجارية، الحوكمة والامتثال القانوني.", enText:"Company formation, commercial contracts, governance and compliance."},
+  {id:"litigation", icon:"scale", ar:"التقاضي وتسوية النزاعات", en:"Litigation & Dispute Resolution", arText:"التمثيل أمام جهات التقاضي وإدارة النزاعات بمنهج واضح ومدروس.", enText:"Thoughtful representation and structured dispute resolution."},
+  {id:"real-estate", icon:"building", ar:"العقارات والتوثيق", en:"Real Estate & Documentation", arText:"الفحص القانوني للعقارات والتعاقدات والتسجيلات.", enText:"Property due diligence, contracts and registration guidance."},
+  {id:"labor", icon:"users", ar:"قانون العمل", en:"Employment Law", arText:"صياغة علاقات العمل، السياسات الداخلية وحل النزاعات.", enText:"Employment contracts, internal policies and workplace disputes."},
+  {id:"family", icon:"shield", ar:"الأحوال الشخصية", en:"Family Law", arText:"خدمات قانونية تراعي الخصوصية والطبيعة الإنسانية للنزاع.", enText:"Discreet, personal legal advice on family matters."},
+  {id:"advisory", icon:"book", ar:"الاستشارات القانونية", en:"Legal Advisory", arText:"رأي قانوني واضح يساعد الأفراد والشركات على اتخاذ القرار.", enText:"Clear legal guidance for individuals and businesses."}
+];
+
+export const articles = [
+  {slug:"company-formation-egypt", category:"corporate", date:"2026-09-10", arTitle:"قبل تأسيس شركتك: 5 أسئلة قانونية مهمة", enTitle:"Five legal questions before incorporating in Egypt", arExcerpt:"نظرة تمهيدية على القرارات التي تؤثر على شكل الشركة ومسؤوليات الشركاء.", enExcerpt:"An introductory guide to incorporation choices and founders’ responsibilities.", arBody:["اختيار الشكل القانوني المناسب يبدأ من فهم عدد الشركاء وطبيعة النشاط والمسؤولية المتوقعة.","راجع الصلاحيات والتوقيع ومبادئ توزيع الأرباح وفض النزاعات قبل البدء بالإجراءات.","تختلف المتطلبات تبعًا للنشاط والجهة المختصة؛ استعن بمختص للتحقق من القواعد السارية."], enBody:["Choosing the right entity starts with the founders, planned activities and liability exposure.","Agree on signing authority, profit allocation and dispute resolution before starting.","Requirements differ by activity and competent authority; seek qualified advice for current rules."]},
+  {slug:"commercial-contract-basics", category:"corporate", date:"2026-09-02", arTitle:"بنود مهمة في العقود التجارية", enTitle:"Clauses to review in commercial contracts", arExcerpt:"كيف تقلل الالتباس في الالتزامات والمواعيد وآليات إنهاء التعاقد؟", enExcerpt:"Reduce ambiguity around obligations, timelines and termination.", arBody:["الوضوح في نطاق العمل وآلية التسليم والقبول يقلل فرص الخلاف.","يجب مراجعة الجزاءات والضمانات ووسيلة الإخطار والقانون الواجب التطبيق وفق طبيعة العلاقة.","هذه المعلومات للتوعية العامة وليست مشورة قانونية لحالة محددة."], enBody:["Clarity in scope, delivery and acceptance can prevent disputes.","Review penalties, warranties, notices and governing law in light of the relationship.","This material is general information, not legal advice for a particular matter."]},
+  {slug:"property-due-diligence", category:"real-estate", date:"2026-08-22", arTitle:"قبل شراء عقار: خطوات المراجعة القانونية", enTitle:"Property due diligence before purchase", arExcerpt:"مراجعة المستندات وصفة البائع والالتزامات القائمة خطوة لا يمكن تجاوزها.", enExcerpt:"Why documents, seller authority and existing obligations matter.", arBody:["تحقق من سند الملكية وتسلسل التصرفات وصفة الشخص المخول بالتوقيع.","قد تختلف إجراءات الشهر أو التسجيل بحسب نوع العقار والموقع والجهات المختصة.","لا تعتمد على نموذج عقد موحد دون مراجعة المستندات الأصلية."], enBody:["Review title documents, chain of ownership and signing authority.","Registration requirements depend on the property and jurisdiction.","Avoid relying on boilerplate contracts without reviewing originals."]}
+];
+
+export const officialLinks = [
+  {nameAr:"بوابة مصر الرقمية", nameEn:"Digital Egypt Portal", descriptionAr:"خدمات حكومية رقمية.", descriptionEn:"Online public services.", category:"services", href:"https://digital.gov.eg/"},
+  {nameAr:"وزارة العدل المصرية", nameEn:"Egyptian Ministry of Justice", descriptionAr:"الموقع الرسمي للوزارة.", descriptionEn:"Official ministry website.", category:"justice", href:"https://moj.gov.eg/"},
+  {nameAr:"الهيئة العامة للاستثمار", nameEn:"General Authority for Investment", descriptionAr:"معلومات الاستثمار وتأسيس الشركات.", descriptionEn:"Investment and company formation.", category:"business", href:"https://www.gafi.gov.eg/"},
+  {nameAr:"مصلحة الضرائب المصرية", nameEn:"Egyptian Tax Authority", descriptionAr:"خدمات ومعلومات ضريبية.", descriptionEn:"Tax information and services.", category:"business", href:"https://www.eta.gov.eg/"}
+];
+// Confirm external official URLs before launch; public availability can change.
