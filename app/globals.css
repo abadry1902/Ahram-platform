@@ -6,3 +6,13 @@
 @media(max-width:900px){.nav{gap:11px}.nav a{font-size:12px}.hero-inner{gap:15px}.grid{grid-template-columns:repeat(2,1fr)}.stat-grid{grid-template-columns:repeat(2,1fr)}.workspace{grid-template-columns:1fr}.sidebar{display:flex;align-items:center;gap:8px;overflow-x:auto;padding:12px}.sidebar .brand{margin:0 18px 0 0;min-width:140px}.side-link{white-space:nowrap}.dashboard-grid,.details-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.container{width:min(100% - 30px,1180px)}.header-inner{min-height:72px;flex-wrap:wrap;padding:10px 0}.menu-toggle{display:block;border:none;background:var(--light);border-radius:8px;padding:7px 12px}.nav{display:none;width:100%;flex-direction:column;align-items:stretch;padding:13px 0}.nav.open{display:flex}.hero-inner{grid-template-columns:1fr;min-height:auto;padding:60px 0 0}.hero-symbol{min-height:230px}.hero-symbol .pyramids{transform:scale(.6)}.grid,.split,.foot-grid{grid-template-columns:1fr}.section{padding:50px 0}.page-head{padding:40px 0}.page-head h1{font-size:29px}.workspace-top,.workspace-body{padding:17px}.sidebar .brand-sub{display:none}.stat-grid{gap:10px}.stat{padding:13px}.stat strong{font-size:26px}.card{padding:19px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+
+/* Brand refinements: architectural light-theme, blue/orange geometric language. */
+.hero{background:linear-gradient(120deg,#fdfefe 0%,#eaf2ff 62%,#cbdff9 100%);color:var(--blue);border-bottom:1px solid #d8e5f5}
+.hero p{color:#475f82}.hero .eyebrow{color:var(--orange)!important}
+.hero-symbol::after{border-color:#1546a033;background:linear-gradient(145deg,#fff9,#ecf3ff44)}
+.hero-symbol .pyramid:nth-child(1){background:linear-gradient(115deg,#ffffff,#c6d9f1)}
+.hero-symbol .pyramid:nth-child(3){background:linear-gradient(100deg,#4080df,#0d4199)}
+.site-header .brand-name{font-size:23px}
+.sidebar .brand{color:#fff}.sidebar .brand svg path[fill="#1546A0"]{fill:#d9e9ff}
+.sidebar .brand .brand-sub{color:#c4d7f4}
