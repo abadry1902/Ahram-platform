@@ -1,0 +1,9 @@
+import {notFound} from "next/navigation";
+import {requireUser} from "@/lib/auth";
+import {updateArticle} from "@/app/actions/content";
+import Link from "next/link";
+export default async function EditArticle({params}:{params:Promise<{id:string}>}){
+ const {id}=await params;const {db,profile}=await requireUser();if(profile.role==="employee")notFound();
+ const {data:a}=await db.from("articles").select("*").eq("id",id).maybeSingle();if(!a)notFound();
+ return <><div className="title-row"><div><Link href="/app/content" className="muted">← المقالات</Link><h1>تحرير المقال</h1><p className="muted">الحالة الحالية: {a.status}</p></div></div><div className="card" style={{maxWidth:900}}><form action={updateArticle}><input type="hidden" name="id" value={id}/><label className="form-field">عنوان عربي<input className="input" name="title_ar" defaultValue={a.title_ar} required/></label><label className="form-field">English title<input className="input" name="title_en" defaultValue={a.title_en}/></label><label className="form-field">Slug<input className="input english" name="slug" defaultValue={a.slug} required/></label><label className="form-field">تصنيف<input className="input" name="category" defaultValue={a.category} required/></label><label className="form-field">ملخص عربي<textarea className="input" name="excerpt_ar" defaultValue={a.excerpt_ar}/></label><label className="form-field">English excerpt<textarea className="input" name="excerpt_en" defaultValue={a.excerpt_en}/></label><label className="form-field">محتوى عربي<textarea className="input" name="body_ar" defaultValue={a.body_ar} required/></label><label className="form-field">English content<textarea className="input" name="body_en" defaultValue={a.body_en}/></label><button className="button alt">حفظ التعديل</button></form>{a.status==="published"&&<p className="notice" style={{marginTop:15}}>تعديل المحتوى المنشور يحتاج موافقة المشرف.</p>}</div></>;
+}
