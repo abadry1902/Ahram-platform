@@ -14,7 +14,9 @@ export async function createTask(data:FormData){
  if(assignees.length===0 || (p.data.leader_id&&!assignees.includes(p.data.leader_id)))redirect("/app/tasks/new?error=assignees");
  const due=p.data.due_at?new Date(p.data.due_at):null;
  if(due&&Number.isNaN(due.getTime()))redirect("/app/tasks/new?error=date");
- const {data:id,error}=await db.rpc("create_task_secure",{p_title:p.data.title,p_description:p.data.description||null,p_priority:p.data.priority,p_due_at:due?.toISOString()||null,p_assignee_ids:assignees,p_leader_id:p.data.leader_id||null});
+ const templateId=trimmed(data,"task_type_id");
+ if(templateId&&!uid.safeParse(templateId).success)redirect("/app/tasks/new?error=template");
+ const {data:id,error}=await db.rpc("create_task_with_template_secure",{p_template_id:templateId||null,p_title:p.data.title,p_description:p.data.description||null,p_priority:p.data.priority,p_due_at:due?.toISOString()||null,p_assignee_ids:assignees,p_leader_id:p.data.leader_id||null});
  if(error||!id)redirect("/app/tasks/new?error=create");
  revalidatePath("/app");revalidatePath("/app/tasks");redirect(`/app/tasks/${id}`);
 }
