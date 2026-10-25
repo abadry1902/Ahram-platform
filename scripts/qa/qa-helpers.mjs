@@ -55,6 +55,9 @@ export async function request(path, {method='GET', jwt, body, headers={}} = {}) 
 export async function signIn(email, password) {
   const r=await request('/auth/v1/token?grant_type=password', {method:'POST',body:{email,password}});
   assert.ok(r.ok && r.data?.access_token && r.data?.user?.id, `QA sign-in failed (HTTP ${r.status}); response body omitted to protect credentials`);
+  // This is a fail-closed test preflight, not server-side JWT verification.
+  const claims=JSON.parse(Buffer.from(r.data.access_token.split('.')[1],'base64url').toString());
+  assert.equal(claims.aal,'aal2','QA requires a real MFA-verified session; password-only fixtures cannot validate the production workspace');
   return {jwt:r.data.access_token, id:r.data.user.id};
 }
 

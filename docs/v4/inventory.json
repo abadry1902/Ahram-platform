@@ -192,6 +192,30 @@
       "design": "V4 applied; original logo pending",
       "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
       "functional": "Read-only navigation / layout checked; submission unavailable in Sites review"
+    },
+    {
+      "route": "/auth/confirm",
+      "source": "app/auth/confirm/page.tsx",
+      "access": "authenticated onboarding",
+      "design": "V4 shared authentication shell; AR/EN",
+      "browser": "Pending browser review",
+      "functional": "Build/typecheck pass; real Auth integration pending"
+    },
+    {
+      "route": "/auth/setup",
+      "source": "app/auth/setup/page.tsx",
+      "access": "authenticated onboarding",
+      "design": "V4 shared authentication shell; AR/EN",
+      "browser": "Pending browser review",
+      "functional": "Build/typecheck pass; real Auth integration pending"
+    },
+    {
+      "route": "/auth/mfa",
+      "source": "app/auth/mfa/page.tsx",
+      "access": "authenticated onboarding",
+      "design": "V4 shared authentication shell; AR/EN",
+      "browser": "Pending browser review",
+      "functional": "Build/typecheck pass; real Auth integration pending"
     }
   ],
   "layouts": [

@@ -30,3 +30,13 @@
 مراجع التحذيرات: [EXECUTE للزائر](https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable)، [EXECUTE للمستخدم](https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable)، [RLS بلا سياسة](https://supabase.com/docs/guides/database/database-linter?lint=0008_rls_enabled_no_policy).
 
 هذه الحالة أحدث من تقارير الاتصال والمراجعة السابقة؛ لا يزال نشر الواجهة الحية غير منفذ.
+
+## تحديث المصادقة
+
+أضيفت صفحات /auth/confirm و/auth/setup و/auth/mfa بالعربية والإنجليزية، مع قبول الدعوات بنوعي PKCE وimplicit، وإزالة الرموز من سجل عنوان المتصفح وعدم تسجيلها. إعداد كلمة المرور يتطلب جلسة صالحة، ويطلب MFA أولًا إذا كان الحساب مسجلًا بعامل مؤكد.
+
+الترحيل المحلي 20261025193510_require_workspace_mfa.sql طُبق بالإصدار البعيد 20261025193635. التحقق البعيد أكد وجود 14 سياسة restrictive تفرض aal2، وحراسة MFA داخل دوال الحالة والتقدم، ومنع تنفيذ دالة المنصة rls_auto_enable للزائر والمستخدم. القراءة العامة للمقالات المنشورة محفوظة.
+
+14 اختبار PostgreSQL محلي ناجح؛ لا تُعد بديلًا لاختبار Auth وTOTP والبريد الحقيقي. يجب تحديث جلسات QA إلى aal2 قبل الاختبارات البعيدة. البريد الافتراضي لا يُعتمد بديلًا عن SMTP إنتاجي لكل الموظفين. عدم وجود دومين لا يمنع تجهيز المسارات على عنوان Sites الحالي، لكنه لا يثبت جاهزية تسليم البريد.
+
+هذه الملفات نسخة مراجعة غير منشورة. لم تُرسل دعوة المشرف ولم تُنشأ هويته، ولا تزال المرفقات ونموذج الاستفسارات مغلقين. تفعيلهما يحتاج مزود فحص وCAPTCHA، لا مجرد تغيير علم برمجي.

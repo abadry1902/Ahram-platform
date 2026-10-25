@@ -76,3 +76,16 @@ Machine-readable source inventory: `inventory.json`.
 ## Review and publication
 
 This change is a review candidate. Do not merge to main or deploy the saved Sites version until the user approves. The current live Site and GitHub main are unchanged. All review-only public files are removed before build/package; the maintained test renderer writes to `.review/output` outside the application public directory.
+
+## صفحات المصادقة الإضافية
+
+| المسار | الحالة |
+|---|---|
+| /auth/confirm | منفذ AR/EN؛ التكامل الحقيقي مع الدعوة معلق |
+| /auth/setup | منفذ AR/EN؛ تغيير كلمة المرور يحتاج جلسة وMFA للحساب المسجل |
+| /auth/mfa | منفذ AR/EN؛ إعداد TOTP واختيار العامل والتحقق؛ الاختبار الحقيقي معلق |
+
+إجمالي ملفات الصفحات أصبح 29. لقطات الصفحات السابقة لا تغطي صفحات المصادقة الجديدة.
+
+### Auth browser capture — 2026-10-25
+8 saved actual browser screenshots cover confirm in Arabic/English at 390, 768 and 1280 px, plus setup and MFA in Arabic at 390 px. The other captured files could not be retained; their screenshots remain incomplete. These show the fail-closed unavailable-session/configuration state only; they do not demonstrate successful invitation, password update or TOTP enrollment. Screenshots: `docs/acceptance/screenshots/auth/`.

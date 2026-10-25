@@ -47,6 +47,8 @@ before(async () => {
     create table auth.users(id uuid primary key, raw_user_meta_data jsonb not null default '{}');
     create function auth.uid() returns uuid language sql stable as
       $$select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid$$;
+    create function auth.jwt() returns jsonb language sql stable as
+      $$select jsonb_build_object('aal',coalesce(nullif(current_setting('request.jwt.claim.aal',true),''),'aal2'))$$;
     create table storage.buckets(id text primary key,name text,public boolean,file_size_limit bigint,allowed_mime_types text[]);
     create table storage.objects(id uuid primary key default gen_random_uuid(),bucket_id text,name text);
     alter table storage.objects enable row level security;
@@ -191,4 +193,16 @@ test('closed tasks reject direct note and checklist writes',async()=>{
 test('production gates deny unscanned uploads and direct enquiry spam',async()=>{
  await deny(()=>as('anon',null,()=>query("insert into public.contact_enquiries(name,email,message) values('Local QA','local@example.invalid','Synthetic local enquiry')")),/permission denied/);
  await deny(()=>authenticated(ids.employee,()=>query("insert into storage.objects(bucket_id,name) values('task-ops',$1)",[`${leaderlessTask}/${ids.employee}/test.pdf`])),/row-level security/);
+});
+
+test('MFA is enforced for direct table reads and leader RPCs, including enrolled-user AAL1 sessions',async()=>{
+ await query("select set_config('request.jwt.claim.aal','aal1',false)");
+ try {
+  assert.equal((await authenticated(ids.supervisor,()=>query('select id from public.tasks'))).length,0);
+  assert.equal((await authenticated(ids.employee,()=>query('select id from public.profiles'))).length,0);
+  await deny(()=>authenticated(ids.leader,()=>progress(leaderlessTask,10)),/MFA required/);
+  await deny(()=>authenticated(ids.supervisor,()=>status(leaderlessTask,'in_progress')),/MFA required/);
+  assert.equal((await as('anon',null,()=>query("select id from public.articles where status='published'"))).length,1);
+ } finally {await query("select set_config('request.jwt.claim.aal','aal2',false)");}
+ assert.equal((await authenticated(ids.supervisor,()=>query('select id from public.tasks'))).length,3);
 });
