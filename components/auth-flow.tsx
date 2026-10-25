@@ -9,16 +9,17 @@ export function AuthFlow({mode,locale,next='app'}:{mode:'confirm'|'setup'|'mfa';
  const fail=()=>setError(t('تعذر إتمام الخطوة. أعد المحاولة أو تواصل مع إدارة المكتب.','Unable to complete this step. Try again or contact the office administrator.'));
  useEffect(()=>{if(started.current)return;started.current=true;
  void(async()=>{try{
- const db=browserClient();
  if(mode==='confirm'){
   const current=new URL(window.location.href),fragment=new URLSearchParams(current.hash.slice(1));
   const access=fragment.get('access_token'),refresh=fragment.get('refresh_token'),authCode=current.searchParams.get('code');
   // Remove one-time credentials from browser history immediately; never log them.
   window.history.replaceState(null,'',`/auth/confirm?locale=${locale}`);
+  const db=browserClient();
   if(access&&refresh){const result=await db.auth.setSession({access_token:access,refresh_token:refresh});if(result.error)throw result.error;}
   else if(authCode){const result=await db.auth.exchangeCodeForSession(authCode);if(result.error)throw result.error;}
   else throw new Error('Missing invitation');
  }
+ const db=browserClient();
  const {data,error:authError}=await db.auth.getUser();if(authError||!data.user){window.location.replace(`/login?locale=${locale}&error=session`);return;}
  if(mode==='confirm'){window.location.replace(`/auth/setup?locale=${locale}`);return;}
  const list=await db.auth.mfa.listFactors();if(list.error)throw list.error;
