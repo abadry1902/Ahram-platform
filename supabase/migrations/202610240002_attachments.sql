@@ -42,3 +42,16 @@ create policy "only participants can upload operational files" on storage.object
 
 revoke all on function public.get_attachment_task_id(text) from public,anon,authenticated;
 grant execute on function public.get_attachment_task_id(text) to authenticated;
+
+alter table public.task_attachments add constraint attachment_path_matches_record check (
+ split_part(storage_path,'/',1)=task_id::text and
+ split_part(storage_path,'/',2)=uploader_id::text and
+ split_part(storage_path,'/',3)<>'' and
+ array_length(string_to_array(storage_path,'/'),1)=3
+);
+create trigger attachments_require_open_task before insert on public.task_attachments
+ for each row execute function public.guard_open_task_child();
+-- Production gate: a trusted quarantine/scanning pipeline must precede uploads.
+-- Neither client metadata nor Storage REST uploads may bypass this gate.
+drop policy "participants register operational attachment" on public.task_attachments;
+drop policy "only participants can upload operational files" on storage.objects;

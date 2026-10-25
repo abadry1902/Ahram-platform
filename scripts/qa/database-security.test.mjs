@@ -183,3 +183,12 @@ test('trigger-only and cron functions cannot be called by clients',async()=>{
   }
   assert.equal((await query("select has_function_privilege('service_role','public.enqueue_due_reminders()','execute') as allowed"))[0].allowed,true);
 });
+
+test('closed tasks reject direct note and checklist writes',async()=>{
+ await deny(()=>authenticated(ids.leader,()=>query('insert into public.task_notes(task_id,author_id,body) values($1,$2,$3)',[sharedTask,ids.leader,'Closed task append'])),/Closed task is read-only/);
+ await deny(()=>authenticated(ids.supervisor,()=>query('insert into public.task_steps(task_id,title) values($1,$2)',[sharedTask,'Closed task checklist'])),/Closed task is read-only/);
+});
+test('production gates deny unscanned uploads and direct enquiry spam',async()=>{
+ await deny(()=>as('anon',null,()=>query("insert into public.contact_enquiries(name,email,message) values('Local QA','local@example.invalid','Synthetic local enquiry')")),/permission denied/);
+ await deny(()=>authenticated(ids.employee,()=>query("insert into storage.objects(bucket_id,name) values('task-ops',$1)",[`${leaderlessTask}/${ids.employee}/test.pdf`])),/row-level security/);
+});

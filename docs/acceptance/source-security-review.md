@@ -1,3 +1,5 @@
+> تحديث لاحق: تم تطبيق قاعدة الإنتاج. راجع [الحالة الحالية وسجل الترحيلات](production-setup-ar.md). ما يلي سجل المراجعة السابقة.
+
 # Source security review — 2026-10-25
 
 **NOT production approval or a completed live Auth/RLS integration test.** The six migrations have now been hardened locally after read-only inspection of the dedicated project's empty application schema and default grants. No remote DDL, business-record writes, Auth account creation or runtime configuration changes have been made. Existing server actions and Auth flows are unchanged.

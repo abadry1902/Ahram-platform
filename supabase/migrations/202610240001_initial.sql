@@ -376,3 +376,31 @@ grant execute on function public.is_supervisor(), public.is_content_editor(),
 revoke all on function public.on_auth_user_created(), public.lock_assignment_columns(),
  public.task_history_after_update(), public.article_approval_guard(), public.prevent_notification_rewrite()
  from public,anon,authenticated;
+
+-- Serialize child writes against closure, including direct Data API requests.
+create or replace function public.guard_open_task_child() returns trigger
+language plpgsql security definer set search_path='' as $$
+declare target_task uuid; parent_status text;
+begin
+ if tg_table_name='step_completions' then
+  select task_id into target_task from public.task_steps
+   where id=case when tg_op='DELETE' then old.step_id else new.step_id end;
+ else
+  target_task:=case when tg_op='DELETE' then old.task_id else new.task_id end;
+ end if;
+ select status into parent_status from public.tasks where id=target_task for update;
+ if not found then raise exception 'Task not found'; end if;
+ if parent_status in ('done','expired') then raise exception 'Closed task is read-only'; end if;
+ if tg_op='DELETE' then return old; end if;
+ return new;
+end; $$;
+revoke all on function public.guard_open_task_child() from public,anon,authenticated;
+create trigger notes_require_open_task before insert on public.task_notes
+ for each row execute function public.guard_open_task_child();
+create trigger steps_require_open_task before insert on public.task_steps
+ for each row execute function public.guard_open_task_child();
+create trigger completions_require_open_task before insert or delete on public.step_completions
+ for each row execute function public.guard_open_task_child();
+-- No direct REST bypass of the future CAPTCHA/rate-limited enquiry endpoint.
+drop policy "public can send enquiries" on public.contact_enquiries;
+revoke insert on public.contact_enquiries from anon,authenticated;
