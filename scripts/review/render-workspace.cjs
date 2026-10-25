@@ -17,7 +17,7 @@ const requireUser=async()=>{const profile=(state.userId?fixtures().profiles.find
 Module._load=function(id,parent,isMain){
  if(id==='@/lib/auth')return {requireUser,requireSupervisor:requireUser};
  if(id==='@/lib/workspace-locale')return {workspaceI18n:async()=>({locale:state.locale,t:orig(root+'/lib/workspace-strings.ts',parent,isMain).workspaceTranslator(state.locale)})};
- if(id==='next/navigation')return {usePathname:()=>state.path,notFound(){throw Error('NOT_FOUND')},redirect(){throw Error('REDIRECT')}};
+ if(id==='next/navigation')return {useRouter:()=>({push(){}}),usePathname:()=>state.path,notFound(){throw Error('NOT_FOUND')},redirect(){throw Error('REDIRECT')}};
  if(id==='next/link')return {__esModule:true,default:({children,href,...props})=>React.createElement('a',{...props,href},children)};
  if(id.startsWith('@/app/actions/'))return new Proxy({__esModule:true},{get:(o,k)=>k==='__esModule'?true:async()=>{throw Error('VISUAL REVIEW: actions are disabled')}});
  if(id.startsWith('@/')){const base=path.join(root,id.slice(2));id=[base,base+'.ts',base+'.tsx',base+'.json',path.join(base,'index.tsx')].find(p=>fs.existsSync(p)&&fs.statSync(p).isFile())||base;}
@@ -39,8 +39,8 @@ const routes=['','tasks','tasks/new','tasks/[id]','archive','calendar','reports'
  const assert=require('node:assert/strict'), TaskPage=require(root+'/app/app/tasks/[id]/page.tsx').default;
  const renderTask=async(role,userId,taskStatus='in_progress')=>{state={locale:'en',role,userId,taskStatus,path:'/app/tasks/review-task-0',empty:false};return renderToStaticMarkup(React.createElement(WorkspaceShell,{locale:'en',profile:(await requireUser()).profile},await TaskPage({params:Promise.resolve({id:'review-task-0'}),searchParams:Promise.resolve({})})));};
  let html=await renderTask('supervisor','review-supervisor');assert(html.includes('value="done"'));assert(html.includes('value="expired"'));
- html=await renderTask('employee','review-employee');assert(!html.includes('value="done"'));assert(!html.includes('value="expired"'));assert(html.includes('Update overall progress'));assert(html.includes('Your personal progress'));
- html=await renderTask('employee','review-colleague');assert(!html.includes('Update overall progress'));assert(html.includes('Your personal progress'));
+ html=await renderTask('employee','review-employee');assert(!html.includes('value="done"'));assert(!html.includes('value="expired"'));assert(!html.includes('Update overall progress'));assert(html.includes('Average member progress'));
+ html=await renderTask('employee','review-colleague');assert(!html.includes('Update overall progress'));assert(html.includes('Average member progress'));
  html=await renderTask('employee','review-employee','awaiting_review');assert(!html.includes('Update overall progress'));assert(html.includes('awaiting the supervisor'));
  html=await renderTask('supervisor','review-supervisor','done');assert(!html.includes('Update overall progress'));assert(!html.includes('name="status"'));
  state={locale:'en',role:'employee',path:'/app/content',empty:false};html=renderToStaticMarkup(await require(root+'/app/app/content/page.tsx').default({searchParams:Promise.resolve({})}));assert(html.includes('content editors and supervisors only'));

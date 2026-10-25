@@ -2,10 +2,10 @@ import {cache} from "react";
 import {articles} from "@/lib/content";
 import {createClient} from "@/lib/supabase/server";
 import {mergePublishedWithGuides} from "@/lib/article-selection.mjs";
-export type PublicArticle=(typeof articles)[number];
-type PublishedRow={slug:string;category:string;published_at:string|null;title_ar:string;title_en:string;excerpt_ar:string;excerpt_en:string;body_ar:string;body_en:string};
-const fields="slug,category,published_at,title_ar,title_en,excerpt_ar,excerpt_en,body_ar,body_en";
-const normalize=(a:PublishedRow):PublicArticle=>({slug:a.slug,category:a.category,date:a.published_at||"",arTitle:a.title_ar,enTitle:a.title_en,arExcerpt:a.excerpt_ar,enExcerpt:a.excerpt_en,arBody:a.body_ar.split("\n").filter(Boolean),enBody:a.body_en.split("\n").filter(Boolean)});
+export type PublicArticle=(typeof articles)[number]&{categories?:string[];imageUrl?:string|null};
+type PublishedRow={categories?:string[];image_url?:string|null;slug:string;category:string;published_at:string|null;title_ar:string;title_en:string;excerpt_ar:string;excerpt_en:string;body_ar:string;body_en:string};
+const fields="categories,image_url,slug,category,published_at,title_ar,title_en,excerpt_ar,excerpt_en,body_ar,body_en";
+const normalize=(a:PublishedRow):PublicArticle=>({categories:a.categories?.length?a.categories:[a.category],imageUrl:a.image_url,slug:a.slug,category:a.category,date:a.published_at||"",arTitle:a.title_ar,enTitle:a.title_en,arExcerpt:a.excerpt_ar,enExcerpt:a.excerpt_en,arBody:a.body_ar.split("\n").filter(Boolean),enBody:a.body_en.split("\n").filter(Boolean)});
 const guides=[...articles].sort((a,b)=>b.date.localeCompare(a.date));
 export const getPublicArticles=cache(async():Promise<PublicArticle[]>=>{
  const db=await createClient();

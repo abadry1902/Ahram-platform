@@ -1,0 +1,8 @@
+'use client';
+import {useState} from 'react';
+import {Select,Input,Textarea} from '@/components/ui';
+export function TaskTemplatePicker({templates,locale}:{templates:{id:string;name_ar:string;stages:string[]}[];locale:string}){
+ const [selected,setSelected]=useState('');const [stages,setStages]=useState('');const en=locale==='en';
+ const steps=selected==='new'?stages.split('\n').map(x=>x.trim()).filter(Boolean):templates.find(x=>x.id===selected)?.stages||[];
+ return <section className="card" style={{background:'var(--pale)',marginBottom:24}}><label className="form-field">{en?'Progress template':'قالب مراحل التقدم'}<Select value={selected} onChange={e=>setSelected(e.target.value)}><option value="">{en?'No template':'بدون قالب'}</option>{templates.map(t=><option value={t.id} key={t.id}>{t.name_ar}</option>)}<option value="new">{en?'+ Create a reusable template':'+ إضافة قالب جديد'}</option></Select></label><input type="hidden" name="task_type_id" value={selected==='new'?'':selected}/>{selected==='new'&&<><label className="form-field">{en?'Template name':'اسم القالب'}<Input name="new_template_name" required minLength={3} maxLength={100}/></label><label className="form-field">{en?'Stages — one per line':'المراحل — كل مرحلة في سطر'}<Textarea name="new_template_stages" required value={stages} onChange={e=>setStages(e.target.value)} maxLength={2500}/></label></>}{steps.length>0&&<><ol>{steps.map((s,i)=><li key={i}>{s} <small className="muted">({Number((100/steps.length).toFixed(2))}%)</small></li>)}</ol><p className="tiny muted">{en?'Each checked step updates your progress. Shared task progress is the average across all assigned members.':'كل علامة إتمام تحدّث تقدمك تلقائيًا. تقدم المهمة المشتركة هو متوسط تقدم جميع المشاركين.'}</p></>}</section>;
+}

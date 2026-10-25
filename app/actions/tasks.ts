@@ -14,7 +14,9 @@ export async function createTask(data:FormData){
  if(assignees.length===0 || (p.data.leader_id&&!assignees.includes(p.data.leader_id)))redirect("/app/tasks/new?error=assignees");
  const due=p.data.due_at?new Date(p.data.due_at):null;
  if(due&&Number.isNaN(due.getTime()))redirect("/app/tasks/new?error=date");
- const templateId=trimmed(data,"task_type_id");
+ let templateId=trimmed(data,"task_type_id");
+ const templateName=trimmed(data,"new_template_name");
+ if(templateName){const stages=trimmed(data,"new_template_stages").split(/\r?\n/).map(s=>s.trim()).filter(Boolean);if(templateName.length<3||templateName.length>100||!stages.length||stages.length>20||stages.some(s=>s.length>120))redirect("/app/tasks/new?error=template");const {data:created,error:templateError}=await db.from("task_types").insert({name_ar:templateName,stages}).select("id").single();if(templateError||!created)redirect("/app/tasks/new?error=template");templateId=created.id;}
  if(templateId&&!uid.safeParse(templateId).success)redirect("/app/tasks/new?error=template");
  const {data:id,error}=await db.rpc("create_task_with_template_secure",{p_template_id:templateId||null,p_title:p.data.title,p_description:p.data.description||null,p_priority:p.data.priority,p_due_at:due?.toISOString()||null,p_assignee_ids:assignees,p_leader_id:p.data.leader_id||null});
  if(error||!id)redirect("/app/tasks/new?error=create");
@@ -32,7 +34,7 @@ export async function setOverallProgress(data:FormData){
  if(!uid.safeParse(taskId).success || !Number.isInteger(progress)||progress<0||progress>100)return;
  const {error}=await db.rpc("set_overall_progress_secure",{p_task_id:taskId,p_progress:progress});
  if(error)redirect(`/app/tasks/${taskId}?error=progress`);
- revalidatePath(`/app/tasks/${taskId}`);
+ revalidatePath(`/app/tasks/${taskId}`);revalidatePath("/app/tasks");revalidatePath("/app");revalidatePath("/app/reports");
 }
 export async function setMyProgress(data:FormData){
  const {db,user}=await requireUser();const taskId=trimmed(data,"task_id");const progress=Number(data.get("progress"));

@@ -78,6 +78,32 @@ before(async () => {
 });
 after(()=>db.close());
 
+test('article covers require editor role and uploader-owned paths',async()=>{
+ await deny(()=>authenticated(ids.employee,()=>query("insert into storage.objects(bucket_id,name) values('article-images',$1)",[`${ids.employee}/cover.jpg`])),/row-level security/);
+ await deny(()=>authenticated(ids.editor,()=>query("insert into storage.objects(bucket_id,name) values('article-images',$1)",[`${ids.supervisor}/cover.jpg`])),/row-level security/);
+ await authenticated(ids.editor,()=>query("insert into storage.objects(bucket_id,name) values('article-images',$1)",[`${ids.editor}/cover.jpg`]));
+ await deny(()=>authenticated(ids.editor,()=>query("insert into storage.objects(bucket_id,name) values('article-images',$1)",[`${ids.editor}/unsafe.svg`])),/row-level security/);
+});
+
+test('four equal steps produce 25/75 percent and shared progress averages all members',async()=>{
+ const task=await authenticated(ids.supervisor,()=>createTask('LOCAL QA checklist',[ids.leader,ids.employee],ids.leader));
+ const steps=await authenticated(ids.supervisor,()=>query("insert into public.task_steps(task_id,title) select $1,'Step '||n from generate_series(1,4) n returning id",[task]));
+ await authenticated(ids.employee,()=>query('insert into public.step_completions(step_id,user_id) values($1,$2)',[steps[0].id,ids.employee]));
+ assert.equal((await query('select progress from public.task_assignments where task_id=$1 and user_id=$2',[task,ids.employee]))[0].progress,25);
+ await authenticated(ids.employee,()=>query('insert into public.step_completions(step_id,user_id) values($1,$3),($2,$3)',[steps[1].id,steps[2].id,ids.employee]));
+ assert.equal((await query('select progress from public.task_assignments where task_id=$1 and user_id=$2',[task,ids.employee]))[0].progress,75);
+ assert.equal((await query('select progress from public.tasks where id=$1',[task]))[0].progress,38);
+ await authenticated(ids.employee,()=>query('update public.task_assignments set progress=100 where task_id=$1 and user_id=$2',[task,ids.employee]));
+ assert.equal((await query('select progress from public.task_assignments where task_id=$1 and user_id=$2',[task,ids.employee]))[0].progress,75);
+ await authenticated(ids.leader,()=>progress(task,100));
+ assert.equal((await query('select progress from public.tasks where id=$1',[task]))[0].progress,38);
+ await deny(()=>authenticated(ids.editor,()=>query('insert into public.step_completions(step_id,user_id) values($1,$2)',[steps[0].id,ids.editor])),/row-level security/);
+ await authenticated(ids.employee,()=>query('delete from public.step_completions where step_id=$1 and user_id=$2',[steps[0].id,ids.employee]));
+ assert.equal((await query('select progress from public.tasks where id=$1',[task]))[0].progress,25);
+ await query('delete from public.step_completions where step_id in (select id from public.task_steps where task_id=$1)',[task]);
+ await query('delete from public.tasks where id=$1',[task]);
+});
+
 test('all application tables have RLS and clients cannot create public objects', async()=>{
   const tables = await query("select relname,relrowsecurity from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r'");
   assert.equal(tables.length,16);
@@ -137,7 +163,7 @@ test('only supervisor and task leader change global progress/status',async()=>{
 test('personal progress is independent and cannot update teammates',async()=>{
   await authenticated(ids.employee,()=>query("update public.task_assignments set status='completed',progress=100 where task_id=$1 and user_id=$2",[sharedTask,ids.employee]));
   assert.equal((await authenticated(ids.employee,()=>query('update public.task_assignments set progress=99 where task_id=$1 and user_id=$2 returning user_id',[sharedTask,ids.leader]))).length,0);
-  assert.equal((await query('select progress from public.tasks where id=$1',[sharedTask]))[0].progress,40);
+  assert.equal((await query('select progress from public.tasks where id=$1',[sharedTask]))[0].progress,50);
   assert.equal((await query('select progress from public.task_assignments where task_id=$1 and user_id=$2',[sharedTask,ids.leader]))[0].progress,0);
 });
 
