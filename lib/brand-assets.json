@@ -1,1 +1,28 @@
-{"horizontal":null,"compact":null,"status":"awaiting-original-transparent-png-or-svg"}
+{
+  "status": "temporary-user-supplied-derived-png-original-master-pending",
+  "originalMasterApproved": false,
+  "horizontal": {
+    "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+    "width": 1544,
+    "height": 576,
+    "sha256": "5bb18ae3bbabd19e8d65b3ac866bc7676d809b3e0e1595b2ccbf23830254c17a"
+  },
+  "horizontalDark": {
+    "src": "/brand/AL_AHRAM_Horizontal_White_and_Orange.png",
+    "width": 1544,
+    "height": 576,
+    "sha256": "a5d11f35d7ca0d6dd3abb31b298f77e06a3a05e5d7813ba7f0da35b6020491e5"
+  },
+  "compact": {
+    "src": "/brand/AL_AHRAM_Symbol_Brand_Full_Color.png",
+    "width": 830,
+    "height": 700,
+    "sha256": "7b834825c649001290354a748efff701ccb309f5afa3053a309379b9be667d9e"
+  },
+  "compactDark": {
+    "src": "/brand/AL_AHRAM_Symbol_White_and_Orange.png",
+    "width": 830,
+    "height": 700,
+    "sha256": "9faae1478584fe864c1a343e1838d2a6df97cd18729c3f0155f5f27453c1093c"
+  }
+}

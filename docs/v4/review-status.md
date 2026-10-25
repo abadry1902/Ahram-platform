@@ -12,7 +12,7 @@ Feature branch: `design/al-ahram-v4-review`.
 - Shared public header/footer and authenticated sidebar/topbar; role-aware navigation, active states, mobile drawer, keyboard Escape/focus return, language preference cookie.
 - Bilingual text for every existing workspace screen; content entered by users is not automatically translated.
 - New purpose-made architectural and consultation scenes. These are illustrative, not photographs of the actual office or staff. Reference-board crops are not used as production artwork.
-- The approximate SVG logo has been removed. The temporary nameplate remains because V4 explicitly identifies its included logo as a reference extraction, not the original transparent master. No tracing or invented logo was used.
+- The approximate SVG logo has been removed. The later user-supplied acceptance kit authorizes temporary derived PNGs, now used without modification; the original transparent master remains pending. See `../acceptance/logo-review-ar.md`. No tracing or invented logo was used.
 
 ## Inventory and coverage
 
