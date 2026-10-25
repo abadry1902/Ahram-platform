@@ -18,7 +18,10 @@ export async function createTask(data:FormData){
  const templateName=trimmed(data,"new_template_name");
  if(templateName){const stages=trimmed(data,"new_template_stages").split(/\r?\n/).map(s=>s.trim()).filter(Boolean);if(templateName.length<3||templateName.length>100||!stages.length||stages.length>20||stages.some(s=>s.length>120))redirect("/app/tasks/new?error=template");const {data:created,error:templateError}=await db.from("task_types").insert({name_ar:templateName,stages}).select("id").single();if(templateError||!created)redirect("/app/tasks/new?error=template");templateId=created.id;}
  if(templateId&&!uid.safeParse(templateId).success)redirect("/app/tasks/new?error=template");
- const {data:id,error}=await db.rpc("create_task_with_template_secure",{p_template_id:templateId||null,p_title:p.data.title,p_description:p.data.description||null,p_priority:p.data.priority,p_due_at:due?.toISOString()||null,p_assignee_ids:assignees,p_leader_id:p.data.leader_id||null});
+ const clientId=trimmed(data,"client_id"),clientName=trimmed(data,"new_client_name");
+ if(trimmed(data,"client_search")&&!clientId&&!clientName)redirect("/app/tasks/new?error=select_client");
+ if((clientId&&!uid.safeParse(clientId).success)||(clientName&&(clientName.length<2||clientName.length>160)))redirect("/app/tasks/new?error=client");
+ const {data:id,error}=await db.rpc("create_task_for_client_secure",{p_client_id:clientId||null,p_new_client_name:clientName||null,p_template_id:templateId||null,p_title:p.data.title,p_description:p.data.description||null,p_priority:p.data.priority,p_due_at:due?.toISOString()||null,p_assignee_ids:assignees,p_leader_id:assignees.length===1?assignees[0]:p.data.leader_id||null});
  if(error||!id)redirect("/app/tasks/new?error=create");
  revalidatePath("/app");revalidatePath("/app/tasks");redirect(`/app/tasks/${id}`);
 }
@@ -72,4 +75,37 @@ export async function toggleStep(data:FormData){
  if(existing)await db.from("step_completions").delete().eq("step_id",stepId).eq("user_id",user.id);
  else await db.from("step_completions").insert({step_id:stepId,user_id:user.id});
  revalidatePath(`/app/tasks/${taskId}`);
+ revalidatePath("/app/tasks");revalidatePath("/app");revalidatePath("/app/reports");
+}
+
+export async function searchClients(term:string){
+ const {db}=await requireUser();
+ const q=String(term||"").trim().slice(0,160).replace(/[\\%_]/g,"\\$&");
+ let query=db.from("clients").select("id,name").order("name").limit(50);
+ if(q)query=query.ilike("name",`%${q}%`);
+ const {data,error}=await query;if(error)throw new Error("clients_unavailable");return data||[];
+}
+export async function getTaskChecklist(taskId:string){
+ const {db,user}=await requireUser();if(!uid.safeParse(taskId).success)throw new Error("invalid_task");
+ const {data:task,error}=await db.from("tasks").select("id,status,progress").eq("id",taskId).single();
+ if(error||!task)throw new Error("task_unavailable");
+ const [{data:steps,error:stepsError},{data:assignment}]=await Promise.all([
+  db.from("task_steps").select("id,title,sort_order").eq("task_id",taskId).order("sort_order").order("id"),
+  db.from("task_assignments").select("progress").eq("task_id",taskId).eq("user_id",user.id).maybeSingle()
+ ]);
+ if(stepsError)throw new Error("steps_unavailable");
+ const {data:done,error:doneError}=steps?.length?await db.from("step_completions").select("step_id").eq("user_id",user.id).in("step_id",steps.map(s=>s.id)):{data:[],error:null};
+ if(doneError)throw new Error("steps_unavailable");const ids=new Set((done||[]).map(d=>d.step_id));
+ return {steps:(steps||[]).map(s=>({id:s.id,title:s.title,checked:ids.has(s.id)})),canEdit:!!assignment&&!["done","expired"].includes(task.status),progress:task.progress,myProgress:assignment?.progress??null};
+}
+export async function setChecklistStep(taskId:string,stepId:string,checked:boolean){
+ const {db,user}=await requireUser();if(!uid.safeParse(taskId).success||!uid.safeParse(stepId).success||typeof checked!=="boolean")throw new Error("invalid_step");
+ const {data:assignment}=await db.from("task_assignments").select("user_id").eq("task_id",taskId).eq("user_id",user.id).maybeSingle();if(!assignment)throw new Error("not_assigned");
+ const {data:step}=await db.from("task_steps").select("id").eq("id",stepId).eq("task_id",taskId).single();if(!step)throw new Error("step_unavailable");
+ // Set desired state instead of toggling: retrying a request cannot invert progress.
+ const result=checked?await db.from("step_completions").upsert({step_id:stepId,user_id:user.id},{onConflict:"step_id,user_id",ignoreDuplicates:true}):await db.from("step_completions").delete().eq("step_id",stepId).eq("user_id",user.id);
+ if(result.error)throw new Error("save_failed");
+ const updated=await getTaskChecklist(taskId);
+ if(updated.steps.find(s=>s.id===stepId)?.checked!==checked)throw new Error("save_failed");
+ revalidatePath(`/app/tasks/${taskId}`);revalidatePath("/app/tasks");revalidatePath("/app");revalidatePath("/app/reports");return updated;
 }

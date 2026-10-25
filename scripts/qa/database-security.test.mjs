@@ -78,6 +78,26 @@ before(async () => {
 });
 after(()=>db.close());
 
+test('beneficiaries are supervisor-created, scoped to shared tasks and protected by MFA',async()=>{
+ const make=(title,clientId,newName,members=[ids.employee])=>query('select public.create_task_for_client_secure($1,$2,$3,$4,$5,$6,$7,$8,$9) as id',[title,null,'medium',null,members,null,null,clientId,newName]);
+ await deny(()=>authenticated(ids.employee,()=>make('Unauthorized client',null,'LOCAL QA private')),/Supervisor only/);
+ await deny(()=>authenticated(ids.employee,()=>query('insert into public.clients(name,created_by) values($1,$2)',['LOCAL QA blocked',ids.employee])),/row-level security/);
+ await deny(()=>as('anon',null,()=>query('select * from public.clients')),/permission denied/);
+ await deny(()=>authenticated(ids.supervisor,()=>make('X',null,'LOCAL QA rollback')),/Invalid title/);
+ assert.equal((await query("select id from public.clients where name='LOCAL QA rollback'")).length,0);
+ const first=(await authenticated(ids.supervisor,()=>make('LOCAL QA client task',null,'LOCAL QA Beneficiary')))[0].id;
+ const client=(await query('select client_id,leader_id from public.tasks where id=$1',[first]))[0];
+ assert.equal(client.leader_id,ids.employee);
+ const second=(await authenticated(ids.supervisor,()=>make('LOCAL QA repeat client',null,'local qa beneficiary')))[0].id;
+ assert.equal((await query('select client_id from public.tasks where id=$1',[second]))[0].client_id,client.client_id);
+ const third=(await authenticated(ids.supervisor,()=>make('LOCAL QA selected client',client.client_id,null)))[0].id;
+ assert.equal((await authenticated(ids.employee,()=>query('select id from public.clients where id=$1',[client.client_id]))).length,1);
+ assert.equal((await authenticated(ids.editor,()=>query('select id from public.clients where id=$1',[client.client_id]))).length,0);
+ await query("select set_config('request.jwt.claim.aal','aal1',false)");
+ try {assert.equal((await authenticated(ids.supervisor,()=>query('select id from public.clients'))).length,0);await deny(()=>authenticated(ids.supervisor,()=>make('LOCAL QA MFA',null,'LOCAL QA MFA')),/Supervisor only/);}finally{await query("select set_config('request.jwt.claim.aal','aal2',false)");}
+ await query('delete from public.tasks where id=any($1::uuid[])',[[first,second,third]]);await query('delete from public.clients where id=$1',[client.client_id]);
+});
+
 test('article covers require editor role and uploader-owned paths',async()=>{
  await deny(()=>authenticated(ids.employee,()=>query("insert into storage.objects(bucket_id,name) values('article-images',$1)",[`${ids.employee}/cover.jpg`])),/row-level security/);
  await deny(()=>authenticated(ids.editor,()=>query("insert into storage.objects(bucket_id,name) values('article-images',$1)",[`${ids.supervisor}/cover.jpg`])),/row-level security/);
@@ -106,7 +126,7 @@ test('four equal steps produce 25/75 percent and shared progress averages all me
 
 test('all application tables have RLS and clients cannot create public objects', async()=>{
   const tables = await query("select relname,relrowsecurity from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r'");
-  assert.equal(tables.length,16);
+  assert.equal(tables.length,17);
   assert.ok(tables.every(t=>t.relrowsecurity));
   for (const role of ['anon','authenticated']) {
     assert.equal((await query("select has_schema_privilege($1,'public','create') as allowed",[role]))[0].allowed,false);
