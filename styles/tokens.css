@@ -1,0 +1,9 @@
+:root {
+  --blue:#1546A0; --royal:#3578E5; --orange:#F47B35; --navy:#0B2F56;
+  --ink:#0B2F56; --muted:#53647B; --bg:#FAFAF7; --white:#FFFFFF;
+  --light:#E8F0FC; --peach:#FFE3D0; --input-surface:#F0F3F8; --line:#DCE5F0;
+  --font-ar:Cairo,Arial,sans-serif; --font-en:Montserrat,Cairo,Arial,sans-serif;
+  --radius:24px; --radius-control:12px; --radius-hero:28px;
+  --space:8px; --container:1240px; --shadow:0 6px 24px #0B2F5606;
+  --hover-duration:180ms; --reveal-duration:520ms;
+}

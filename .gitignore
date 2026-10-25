@@ -6,3 +6,7 @@ node_modules
 *.tsbuildinfo
 .DS_Store
 coverage
+
+.review/
+public/__v4_review/
+public/__v4_frame.html

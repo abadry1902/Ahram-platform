@@ -12,9 +12,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm install --package-lock-only --ignore-scripts
       - run: npm ci
       - run: npm run test:smoke
+      - run: npm run test:ui
       - run: npm run typecheck
       - run: npm run build
         env:

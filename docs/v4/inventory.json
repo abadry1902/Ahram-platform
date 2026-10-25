@@ -1,0 +1,230 @@
+{
+  "github_base": "e326c25227f3c1dfc08379e5c264e13b61a2795d",
+  "pages": [
+    {
+      "route": "/[locale]/about",
+      "source": "app/[locale]/about/page.tsx",
+      "access": "public",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "Read-only navigation / layout checked; submission unavailable in Sites review"
+    },
+    {
+      "route": "/[locale]/articles/[slug]",
+      "source": "app/[locale]/articles/[slug]/page.tsx",
+      "access": "public",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "Read-only navigation / layout checked; submission unavailable in Sites review"
+    },
+    {
+      "route": "/[locale]/articles",
+      "source": "app/[locale]/articles/page.tsx",
+      "access": "public",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "Read-only navigation / layout checked; submission unavailable in Sites review"
+    },
+    {
+      "route": "/[locale]/contact",
+      "source": "app/[locale]/contact/page.tsx",
+      "access": "public",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "Read-only navigation / layout checked; submission unavailable in Sites review"
+    },
+    {
+      "route": "/[locale]/links",
+      "source": "app/[locale]/links/page.tsx",
+      "access": "public",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "Read-only navigation / layout checked; submission unavailable in Sites review"
+    },
+    {
+      "route": "/[locale]",
+      "source": "app/[locale]/page.tsx",
+      "access": "public",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "Read-only navigation / layout checked; submission unavailable in Sites review"
+    },
+    {
+      "route": "/[locale]/services",
+      "source": "app/[locale]/services/page.tsx",
+      "access": "public",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "Read-only navigation / layout checked; submission unavailable in Sites review"
+    },
+    {
+      "route": "/app/archive",
+      "source": "app/app/archive/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app/calendar",
+      "source": "app/app/calendar/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app/content/[id]",
+      "source": "app/app/content/[id]/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app/content",
+      "source": "app/app/content/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app/import",
+      "source": "app/app/import/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app/links",
+      "source": "app/app/links/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app/notifications",
+      "source": "app/app/notifications/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app",
+      "source": "app/app/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app/reports",
+      "source": "app/app/reports/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app/settings",
+      "source": "app/app/settings/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app/tasks/[id]",
+      "source": "app/app/tasks/[id]/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app/tasks/new",
+      "source": "app/app/tasks/new/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app/tasks",
+      "source": "app/app/tasks/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app/team",
+      "source": "app/app/team/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/app/templates",
+      "source": "app/app/templates/page.tsx",
+      "access": "authenticated",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "UI rendering only; authenticated integration pending"
+    },
+    {
+      "route": "/login",
+      "source": "app/login/page.tsx",
+      "access": "public",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "Read-only navigation / layout checked; submission unavailable in Sites review"
+    },
+    {
+      "route": "/",
+      "source": "app/page.tsx",
+      "access": "public",
+      "design": "V4 applied; original logo pending",
+      "browser": "Arabic/English; desktop/tablet/mobile; no root overflow",
+      "functional": "Read-only navigation / layout checked; submission unavailable in Sites review"
+    }
+  ],
+  "layouts": [
+    "app/[locale]/layout.tsx",
+    "app/app/layout.tsx",
+    "app/layout.tsx"
+  ],
+  "endpoints": [
+    "app/api/calendar.ics/route.ts",
+    "app/api/import/commit/route.ts",
+    "app/api/import/preview/route.ts"
+  ],
+  "components": [
+    "components/brand.tsx",
+    "components/site-footer.tsx",
+    "components/site-header.tsx",
+    "components/task-status.tsx",
+    "components/workspace-sidebar.tsx"
+  ],
+  "additional_pages": [
+    "/[locale]/privacy",
+    "/[locale]/articles/guides/[slug]"
+  ],
+  "system_states": [
+    "app/not-found.tsx",
+    "app/error.tsx"
+  ],
+  "new_shared_components": [
+    "components/ui/index.tsx",
+    "components/workspace-shell.tsx",
+    "components/workspace-context.tsx",
+    "components/article-card.tsx",
+    "components/consultation-banner.tsx",
+    "components/system-state.tsx"
+  ]
+}
