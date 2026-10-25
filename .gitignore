@@ -10,3 +10,5 @@ coverage
 .review/
 public/__v4_review/
 public/__v4_frame.html
+
+supabase/.temp/

@@ -20,7 +20,7 @@ values('task-ops','task-ops',false,5242880,array['application/pdf','image/jpeg',
 on conflict (id) do nothing;
 
 create or replace function public.get_attachment_task_id(file_path text) returns uuid
-language plpgsql stable security definer set search_path=public,pg_temp as $$
+language plpgsql stable security invoker set search_path='' as $$
 declare result uuid;
 begin
  result:=split_part(file_path,'/',1)::uuid;
@@ -39,3 +39,6 @@ create policy "only participants can upload operational files" on storage.object
    lower(storage.extension(name)) in ('pdf','jpg','jpeg','png')
  );
 -- Malware scanning / content inspection must be integrated and verified before permitting operational uploads in production.
+
+revoke all on function public.get_attachment_task_id(text) from public,anon,authenticated;
+grant execute on function public.get_attachment_task_id(text) to authenticated;

@@ -2,7 +2,7 @@
 create or replace function public.create_task_with_template_secure(
  p_title text,p_description text,p_priority text,p_due_at timestamptz,
  p_assignee_ids uuid[],p_leader_id uuid,p_template_id uuid
-) returns uuid language plpgsql security definer set search_path=public,pg_temp as $$
+) returns uuid language plpgsql security definer set search_path='' as $$
 declare new_id uuid; step jsonb; index_num int:=0;
 begin
  if not public.is_supervisor() then raise exception 'Supervisor only'; end if;
@@ -21,5 +21,5 @@ begin
  end if;
  return new_id;
 end; $$;
-revoke all on function public.create_task_with_template_secure(text,text,text,timestamptz,uuid[],uuid,uuid) from public;
+revoke all on function public.create_task_with_template_secure(text,text,text,timestamptz,uuid[],uuid,uuid) from public,anon,authenticated;
 grant execute on function public.create_task_with_template_secure(text,text,text,timestamptz,uuid[],uuid,uuid) to authenticated;

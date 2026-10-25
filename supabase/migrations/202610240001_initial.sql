@@ -1,6 +1,12 @@
 -- Al Ahram Platform: initial database / authorization model.
 -- Run this migration in a NEW Supabase project. Review before using real client data.
 create extension if not exists pgcrypto;
+-- These migrations have not been deployed. Require explicit API grants for every
+-- application function, including functions created by later migrations.
+revoke create on schema public from public,anon,authenticated;
+alter default privileges for role postgres revoke execute on functions from public;
+alter default privileges for role postgres in schema public
+ revoke execute on functions from public,anon,authenticated;
 
 create table if not exists public.profiles (
  id uuid primary key references auth.users(id) on delete cascade,
@@ -8,7 +14,7 @@ create table if not exists public.profiles (
  role text not null default 'employee' check (role in ('supervisor','employee','content_editor')),
  created_at timestamptz not null default now()
 );
-create or replace function public.on_auth_user_created() returns trigger language plpgsql security definer set search_path=public,pg_temp as $$
+create or replace function public.on_auth_user_created() returns trigger language plpgsql security definer set search_path='' as $$
 begin
  insert into public.profiles(id,full_name,role)
  values(new.id,coalesce(nullif(new.raw_user_meta_data->>'full_name',''),'عضو الفريق'),'employee')
@@ -147,24 +153,24 @@ create table if not exists public.import_batches (
 );
 
 create or replace function public.is_supervisor() returns boolean
-language sql stable security definer set search_path=public,pg_temp as $$
+language sql stable security definer set search_path='' as $$
  select exists(select 1 from public.profiles where id=(select auth.uid()) and role='supervisor');
 $$;
 create or replace function public.is_content_editor() returns boolean
-language sql stable security definer set search_path=public,pg_temp as $$
+language sql stable security definer set search_path='' as $$
  select exists(select 1 from public.profiles where id=(select auth.uid()) and role in ('supervisor','content_editor'));
 $$;
 create or replace function public.is_task_member(p_task_id uuid) returns boolean
-language sql stable security definer set search_path=public,pg_temp as $$
+language sql stable security definer set search_path='' as $$
  select exists(select 1 from public.task_assignments where task_id=p_task_id and user_id=(select auth.uid()));
 $$;
 create or replace function public.shares_task_with(p_user_id uuid) returns boolean
-language sql stable security definer set search_path=public,pg_temp as $$
+language sql stable security definer set search_path='' as $$
  select exists(select 1 from public.task_assignments mine join public.task_assignments theirs on mine.task_id=theirs.task_id
  where mine.user_id=(select auth.uid()) and theirs.user_id=p_user_id);
 $$;
 create or replace function public.can_access_step(p_step_id uuid) returns boolean
-language sql stable security definer set search_path=public,pg_temp as $$
+language sql stable security definer set search_path='' as $$
  select exists(select 1 from public.task_steps where id=p_step_id and (public.is_supervisor() or public.is_task_member(task_id)));
 $$;
 
@@ -217,14 +223,16 @@ create policy "user sees notifications" on public.notifications for select to au
  using (user_id=(select auth.uid()));
 create policy "user reads notifications" on public.notifications for update to authenticated
  using (user_id=(select auth.uid())) with check (user_id=(select auth.uid()));
-create policy "public reads published articles" on public.articles for select to anon,authenticated
+create policy "public reads published articles" on public.articles for select to anon using (status='published');
+create policy "staff reads authorized articles" on public.articles for select to authenticated
  using (status='published' or public.is_content_editor());
 create policy "editor creates drafts" on public.articles for insert to authenticated
  with check (public.is_content_editor() and author_id=(select auth.uid()) and status='draft');
 create policy "editor updates drafts" on public.articles for update to authenticated
  using (public.is_content_editor() and (status<>'published' or public.is_supervisor()))
  with check (public.is_content_editor());
-create policy "public reads published links" on public.useful_links for select to anon,authenticated
+create policy "public reads published links" on public.useful_links for select to anon using (is_published);
+create policy "staff reads authorized links" on public.useful_links for select to authenticated
  using (is_published or public.is_content_editor());
 create policy "supervisor manages links" on public.useful_links for all to authenticated
  using (public.is_supervisor()) with check (public.is_supervisor());
@@ -234,7 +242,7 @@ create policy "public can send enquiries" on public.contact_enquiries for insert
 create policy "supervisor reads enquiries" on public.contact_enquiries for select to authenticated using (public.is_supervisor());
 create policy "supervisor views imports" on public.import_batches for select to authenticated using (public.is_supervisor());
 
-create or replace function public.lock_assignment_columns() returns trigger language plpgsql security definer set search_path=public,pg_temp as $$
+create or replace function public.lock_assignment_columns() returns trigger language plpgsql security definer set search_path='' as $$
 begin
  if old.user_id is distinct from new.user_id or old.task_id is distinct from new.task_id then
   raise exception 'Assignment identity cannot be modified';
@@ -250,7 +258,7 @@ create trigger assignment_lock before update on public.task_assignments
 
 create or replace function public.create_task_secure(
  p_title text,p_description text,p_priority text,p_due_at timestamptz,p_assignee_ids uuid[],p_leader_id uuid default null
-) returns uuid language plpgsql security definer set search_path=public,pg_temp as $$
+) returns uuid language plpgsql security definer set search_path='' as $$
 declare new_id uuid; assignee uuid; cleaned uuid[];
 begin
  if not public.is_supervisor() then raise exception 'Supervisor only'; end if;
@@ -270,7 +278,7 @@ begin
  return new_id;
 end; $$;
 
-create or replace function public.task_history_after_update() returns trigger language plpgsql security definer set search_path=public,pg_temp as $$
+create or replace function public.task_history_after_update() returns trigger language plpgsql security definer set search_path='' as $$
 begin
  if old.status is distinct from new.status then
   insert into public.task_status_history(task_id,previous_status,next_status,reason,changed_by)
@@ -287,9 +295,10 @@ end; $$;
 create trigger task_changed after update on public.tasks for each row execute function public.task_history_after_update();
 
 create or replace function public.set_task_status_secure(p_task_id uuid,p_status text,p_reason text default null)
-returns void language plpgsql security definer set search_path=public,pg_temp as $$
+returns void language plpgsql security definer set search_path='' as $$
 declare row_task public.tasks%rowtype; supervisor boolean := public.is_supervisor();
 begin
+ if auth.uid() is null then raise exception 'Authentication required' using errcode='42501'; end if;
  select * into row_task from public.tasks where id=p_task_id for update;
  if not found then raise exception 'Task not found'; end if;
  if not supervisor and row_task.leader_id is distinct from auth.uid() then raise exception 'Leader or supervisor only'; end if;
@@ -311,9 +320,10 @@ begin
  end if;
 end; $$;
 create or replace function public.set_overall_progress_secure(p_task_id uuid,p_progress int)
-returns void language plpgsql security definer set search_path=public,pg_temp as $$
+returns void language plpgsql security definer set search_path='' as $$
 declare row_task public.tasks%rowtype;
 begin
+ if auth.uid() is null then raise exception 'Authentication required' using errcode='42501'; end if;
  select * into row_task from public.tasks where id=p_task_id for update;
  if not found then raise exception 'Task not found'; end if;
  if not public.is_supervisor() and row_task.leader_id is distinct from auth.uid() then raise exception 'Leader or supervisor only'; end if;
@@ -322,7 +332,7 @@ begin
  update public.tasks set progress=p_progress,updated_at=now() where id=p_task_id;
 end; $$;
 
-create or replace function public.article_approval_guard() returns trigger language plpgsql security definer set search_path=public,pg_temp as $$
+create or replace function public.article_approval_guard() returns trigger language plpgsql security definer set search_path='' as $$
 begin
  if not public.is_supervisor() then
   if old.status='published' or new.status='published' then raise exception 'Supervisor approval is required for publication'; end if;
@@ -335,7 +345,7 @@ begin
 end; $$;
 create trigger article_guard before update on public.articles for each row execute function public.article_approval_guard();
 
-create or replace function public.prevent_notification_rewrite() returns trigger language plpgsql security definer set search_path=public,pg_temp as $$
+create or replace function public.prevent_notification_rewrite() returns trigger language plpgsql security definer set search_path='' as $$
 begin
  if new.user_id is distinct from old.user_id or new.task_id is distinct from old.task_id or new.message is distinct from old.message or new.created_at is distinct from old.created_at then
   raise exception 'Cannot edit notification content';
@@ -344,9 +354,9 @@ begin
 end; $$;
 create trigger notification_protect before update on public.notifications for each row execute function public.prevent_notification_rewrite();
 
-revoke all on function public.create_task_secure(text,text,text,timestamptz,uuid[],uuid) from public;
-revoke all on function public.set_task_status_secure(uuid,text,text) from public;
-revoke all on function public.set_overall_progress_secure(uuid,int) from public;
+revoke all on function public.create_task_secure(text,text,text,timestamptz,uuid[],uuid) from public,anon,authenticated;
+revoke all on function public.set_task_status_secure(uuid,text,text) from public,anon,authenticated;
+revoke all on function public.set_overall_progress_secure(uuid,int) from public,anon,authenticated;
 grant execute on function public.create_task_secure(text,text,text,timestamptz,uuid[],uuid) to authenticated;
 grant execute on function public.set_task_status_secure(uuid,text,text) to authenticated;
 grant execute on function public.set_overall_progress_secure(uuid,int) to authenticated;
@@ -354,3 +364,15 @@ grant execute on function public.set_overall_progress_secure(uuid,int) to authen
 -- Provision the initial supervisor via Supabase Auth first, then elevate the known UUID manually:
 -- update public.profiles set role='supervisor' where id='<AUTH-USER-UUID>';
 -- Do not enable unrestricted public sign-ups for staff. Restrict operational attachments to a PRIVATE bucket.
+
+-- RLS helpers reveal only the caller's own permissions; no anonymous execution.
+revoke all on function public.is_supervisor(), public.is_content_editor(),
+ public.is_task_member(uuid), public.shares_task_with(uuid), public.can_access_step(uuid)
+ from public,anon,authenticated;
+grant execute on function public.is_supervisor(), public.is_content_editor(),
+ public.is_task_member(uuid), public.shares_task_with(uuid), public.can_access_step(uuid)
+ to authenticated;
+-- Trigger invocation does not need client EXECUTE permission.
+revoke all on function public.on_auth_user_created(), public.lock_assignment_columns(),
+ public.task_history_after_update(), public.article_approval_guard(), public.prevent_notification_rewrite()
+ from public,anon,authenticated;

@@ -16,6 +16,7 @@ jobs:
       - run: npm run test:smoke
       - run: npm run test:ui
       - run: npm run test:qa-harness
+      - run: npm run test:db-security
       - run: npm run typecheck
       - run: npm run build
         env:

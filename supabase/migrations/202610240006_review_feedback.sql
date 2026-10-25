@@ -1,7 +1,7 @@
 -- Keep review-return feedback visible and auditable to all task participants.
 alter table public.tasks add column if not exists review_feedback text;
 create or replace function public.task_history_after_update() returns trigger
-language plpgsql security definer set search_path=public,pg_temp as $$
+language plpgsql security definer set search_path='' as $$
 declare change_reason text;
 begin
  change_reason:=case when old.status='awaiting_review' and new.status='in_progress' then new.review_feedback
@@ -20,9 +20,10 @@ begin
 end; $$;
 
 create or replace function public.set_task_status_secure(p_task_id uuid,p_status text,p_reason text default null)
-returns void language plpgsql security definer set search_path=public,pg_temp as $$
+returns void language plpgsql security definer set search_path='' as $$
 declare row_task public.tasks%rowtype; supervisor boolean := public.is_supervisor();
 begin
+ if auth.uid() is null then raise exception 'Authentication required' using errcode='42501'; end if;
  select * into row_task from public.tasks where id=p_task_id for update;
  if not found then raise exception 'Task not found'; end if;
  if not supervisor and row_task.leader_id is distinct from auth.uid() then raise exception 'Leader or supervisor only'; end if;

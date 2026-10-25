@@ -10,20 +10,22 @@
     "typecheck": "tsc --noEmit",
     "test:smoke": "node --test scripts/smoke.mjs scripts/public-content.test.mjs",
     "test:ui": "node scripts/review/render-workspace.cjs",
-    "test:qa-harness": "node --test scripts/qa/helpers.test.mjs"
+    "test:qa-harness": "node --test scripts/qa/helpers.test.mjs",
+    "test:db-security": "node --test scripts/qa/database-security.test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
-    "exceljs": "^4.4.0",
-    "mammoth": "^1.9.0",
     "@supabase/supabase-js": "^2.49.4",
+    "exceljs": "^4.4.0",
     "lucide-react": "^0.468.0",
+    "mammoth": "^1.9.0",
     "next": "^15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.10",
     "@eslint/eslintrc": "^3.3.1",
     "@types/node": "^22.14.0",
     "@types/react": "^19.0.0",

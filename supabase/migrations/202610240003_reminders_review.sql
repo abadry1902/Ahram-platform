@@ -10,7 +10,7 @@ create table if not exists public.reminder_deliveries (
 alter table public.reminder_deliveries enable row level security;
 -- This table is intentionally inaccessible to ordinary authenticated clients.
 create or replace function public.enqueue_due_reminders() returns integer
-language plpgsql security definer set search_path=public,pg_temp as $$
+language plpgsql security definer set search_path='' as $$
 declare count_new integer;
 begin
  with due as (
@@ -41,9 +41,10 @@ grant execute on function public.enqueue_due_reminders() to service_role;
 -- select cron.schedule('ahram-due-reminders','0 8 * * *', $$select public.enqueue_due_reminders();$$);
 
 create or replace function public.set_task_status_secure(p_task_id uuid,p_status text,p_reason text default null)
-returns void language plpgsql security definer set search_path=public,pg_temp as $$
+returns void language plpgsql security definer set search_path='' as $$
 declare row_task public.tasks%rowtype; supervisor boolean := public.is_supervisor();
 begin
+ if auth.uid() is null then raise exception 'Authentication required' using errcode='42501'; end if;
  select * into row_task from public.tasks where id=p_task_id for update;
  if not found then raise exception 'Task not found'; end if;
  if not supervisor and row_task.leader_id is distinct from auth.uid() then raise exception 'Leader or supervisor only'; end if;
@@ -67,9 +68,10 @@ begin
  end if;
 end; $$;
 create or replace function public.set_overall_progress_secure(p_task_id uuid,p_progress int)
-returns void language plpgsql security definer set search_path=public,pg_temp as $$
+returns void language plpgsql security definer set search_path='' as $$
 declare row_task public.tasks%rowtype;
 begin
+ if auth.uid() is null then raise exception 'Authentication required' using errcode='42501'; end if;
  select * into row_task from public.tasks where id=p_task_id for update;
  if not found then raise exception 'Task not found'; end if;
  if not public.is_supervisor() and row_task.leader_id is distinct from auth.uid() then raise exception 'Leader or supervisor only'; end if;
