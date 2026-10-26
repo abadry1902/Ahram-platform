@@ -13,7 +13,7 @@ const columns={
 function mapRow(rec:Record<string,string>):ImportRow{
  const pick=(field:keyof typeof columns)=>{const keys=columns[field];const match=Object.keys(rec).find(k=>keys.includes(key(k)));return match?rec[match].trim():"";};
  const title=pick("title"),description=pick("description"),priorityRaw=pick("priority").toLowerCase();
- const priority=(["urgent","high","medium","low"].includes(priorityRaw)?priorityRaw:({عاجلة:"urgent",عالية:"high",متوسطة:"medium",منخفضة:"low"} as Record<string,string>)[priorityRaw])||"medium";
+ const priority=(["urgent","high","medium","low"].includes(priorityRaw)?priorityRaw:({قصوى:"urgent",عاجلة:"urgent",critical:"urgent",عالية:"high",متوسطة:"medium",منخفضة:"low"} as Record<string,string>)[priorityRaw])||"medium";
  const rawDue=pick("due_at");const date=rawDue?new Date(rawDue):null;
  const due_at=date&&!Number.isNaN(date.getTime())?date.toISOString():"";
  const warnings=[...(title.length<3||title.length>180?["العنوان غير صالح"]:[]),...(rawDue&&!due_at?["تاريخ غير مفهوم"]:[]),...(!pick("assignees_text")?["لا يوجد موظف في الصف؛ سيُستخدم الموظف الافتراضي عند الاستيراد"]:[])];

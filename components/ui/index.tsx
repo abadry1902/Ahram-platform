@@ -1,7 +1,8 @@
+import {SubmitButton} from "../submit-button";
 import type {ButtonHTMLAttributes,InputHTMLAttributes,SelectHTMLAttributes,TextareaHTMLAttributes,HTMLAttributes,TableHTMLAttributes,ReactNode,Ref} from "react";
 
 const classes=(base:string,extra?:string)=>`${base}${extra?` ${extra}`:""}`;
-export function Button({className,variant="primary",...props}:ButtonHTMLAttributes<HTMLButtonElement>&{ref?:Ref<HTMLButtonElement>;variant?:"primary"|"secondary"|"outline"}){return <button className={classes(`button ${variant==="secondary"?"alt":variant==="outline"?"outline":""}`,className)} {...props}/>;}
+export function Button({className,variant="primary",...props}:ButtonHTMLAttributes<HTMLButtonElement>&{ref?:Ref<HTMLButtonElement>;variant?:"primary"|"secondary"|"outline"}){return <SubmitButton className={classes(`button ${variant==="secondary"?"alt":variant==="outline"?"outline":""}`,className)} {...props}/>;}
 export function Input({className,...props}:InputHTMLAttributes<HTMLInputElement>){return <input className={classes(props.type==="hidden"?"":"input",className)} {...props}/>;}
 export function Select({className,...props}:SelectHTMLAttributes<HTMLSelectElement>){return <select className={classes("input",className)} {...props}/>;}
 export function Textarea({className,...props}:TextareaHTMLAttributes<HTMLTextAreaElement>){return <textarea className={classes("input",className)} {...props}/>;}

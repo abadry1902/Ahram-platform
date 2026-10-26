@@ -1,9 +1,9 @@
 name: Build and Typecheck
 on:
   push:
-    branches: [main]
+    branches: [main, design/al-ahram-v4-review, feature/task-analytics-audit-20261026]
   pull_request:
-    branches: [main]
+    branches: [main, design/al-ahram-v4-review, feature/task-analytics-audit-20261026]
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -17,6 +17,7 @@ jobs:
       - run: npm run test:ui
       - run: npm run test:qa-harness
       - run: npm run test:db-security
+      - run: npm run test:analytics
       - run: npm run typecheck
       - run: npm run build
         env:

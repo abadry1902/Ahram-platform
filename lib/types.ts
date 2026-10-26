@@ -4,6 +4,6 @@ export const TASK_STATUS_LABELS: Record<TaskStatus,string> = {
 };
 export type Task = {
  id: string; title: string; description:string|null; status:TaskStatus; priority:"low"|"medium"|"high"|"urgent";
- client_id?:string|null; progress:number; leader_id:string|null; due_at:string|null; created_at:string; closed_at:string|null;
+ deleted_at?:string|null; client_id?:string|null; progress:number; leader_id:string|null; due_at:string|null; created_at:string; closed_at:string|null;
  pause_reason:string|null; closure_reason:string|null; review_feedback?:string|null; task_type_id:string|null;
 };

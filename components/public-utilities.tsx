@@ -1,0 +1,7 @@
+'use client';
+import {useState} from 'react';
+import {MessageCircle,Phone,Facebook,Instagram,Linkedin,Youtube} from 'lucide-react';
+// Activate only after the office supplies and verifies its own destinations.
+const whatsappNumber='';
+export function FloatingWhatsApp(){const [notice,setNotice]=useState(false);return <div className="whatsapp-dock">{notice&&<div className="contact-coming-soon" role="status">رقم واتساب سيُضاف قريبًا · Contact number coming soon</div>}{whatsappNumber?<a className="whatsapp-button" href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer" aria-label="WhatsApp · واتساب"><MessageCircle/><Phone size={14}/></a>:<button type="button" className="whatsapp-button unavailable" aria-label="WhatsApp · قريبًا — coming soon" aria-disabled="true" onClick={()=>setNotice(!notice)}><MessageCircle/><Phone size={14}/><span className="availability-dot"/></button>}</div>;}
+export function SocialIcons({locale}:{locale:string}){return <div className="social-icons" aria-label={locale==='ar'?'حسابات التواصل الاجتماعي — قريبًا':'Social accounts — coming soon'}>{[{Icon:Facebook,name:'Facebook'},{Icon:Instagram,name:'Instagram'},{Icon:Linkedin,name:'LinkedIn'},{Icon:Youtube,name:'YouTube'}].map(({Icon,name})=><button key={name} type="button" disabled aria-label={`${name} — ${locale==='ar'?'قريبًا':'coming soon'}`} title={`${name} — ${locale==='ar'?'قريبًا':'coming soon'}`}><Icon size={19}/></button>)}<small>{locale==='ar'?'حساباتنا قريبًا':'Our accounts, soon'}</small></div>;}

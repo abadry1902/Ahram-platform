@@ -7,3 +7,5 @@ export async function markNotificationRead(form:FormData){
  await db.from("notifications").update({read_at:new Date().toISOString()}).eq("id",id).eq("user_id",user.id);
  revalidatePath("/app/notifications");
 }
+
+export async function notificationSummary(){const {db,user}=await requireUser();const {count,error}=await db.from("notifications").select("id",{count:"exact",head:true}).eq("user_id",user.id).is("read_at",null);if(error)throw new Error("notifications_unavailable");return count||0;}

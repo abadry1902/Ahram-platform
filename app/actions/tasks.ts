@@ -23,14 +23,14 @@ export async function createTask(data:FormData){
  if((clientId&&!uid.safeParse(clientId).success)||(clientName&&(clientName.length<2||clientName.length>160)))redirect("/app/tasks/new?error=client");
  const {data:id,error}=await db.rpc("create_task_for_client_secure",{p_client_id:clientId||null,p_new_client_name:clientName||null,p_template_id:templateId||null,p_title:p.data.title,p_description:p.data.description||null,p_priority:p.data.priority,p_due_at:due?.toISOString()||null,p_assignee_ids:assignees,p_leader_id:assignees.length===1?assignees[0]:p.data.leader_id||null});
  if(error||!id)redirect("/app/tasks/new?error=create");
- revalidatePath("/app");revalidatePath("/app/tasks");redirect(`/app/tasks/${id}`);
+ revalidatePath("/app");revalidatePath("/app/tasks");redirect(`/app/tasks/${id}?ok=created`);
 }
 export async function setStatus(data:FormData){
  const {db}=await requireUser();const taskId=trimmed(data,"task_id");const status=trimmed(data,"status");const reason=trimmed(data,"reason");
  if(!uid.safeParse(taskId).success || !["new","in_progress","paused","awaiting_review","done","expired"].includes(status))return;
  const {error}=await db.rpc("set_task_status_secure",{p_task_id:taskId,p_status:status,p_reason:reason||null});
  if(error)redirect(`/app/tasks/${taskId}?error=status`);
- revalidatePath(`/app/tasks/${taskId}`);revalidatePath("/app");
+ revalidatePath(`/app/tasks/${taskId}`);revalidatePath("/app");redirect(`/app/tasks/${taskId}?ok=saved`);
 }
 export async function setOverallProgress(data:FormData){
  const {db}=await requireUser();const taskId=trimmed(data,"task_id");const progress=Number(data.get("progress"));
@@ -42,8 +42,9 @@ export async function setOverallProgress(data:FormData){
 export async function setMyProgress(data:FormData){
  const {db,user}=await requireUser();const taskId=trimmed(data,"task_id");const progress=Number(data.get("progress"));
  if(!uid.safeParse(taskId).success||!Number.isInteger(progress)||progress<0||progress>100)return;
- await db.from("task_assignments").update({progress,updated_at:new Date().toISOString()}).eq("task_id",taskId).eq("user_id",user.id);
- revalidatePath(`/app/tasks/${taskId}`);
+ const {error}=await db.from("task_assignments").update({progress,updated_at:new Date().toISOString()}).eq("task_id",taskId).eq("user_id",user.id);
+ if(error)redirect(`/app/tasks/${taskId}?error=save`);
+ revalidatePath(`/app/tasks/${taskId}`);redirect(`/app/tasks/${taskId}?ok=saved`);
 }
 export async function setMyStatus(data:FormData){
  const {db,user}=await requireUser();const taskId=trimmed(data,"task_id");
@@ -54,28 +55,27 @@ export async function setMyStatus(data:FormData){
   .update({status,pause_reason:status==="paused"?pause:null,updated_at:new Date().toISOString()})
   .eq("task_id",taskId).eq("user_id",user.id);
  if(error)redirect(`/app/tasks/${taskId}?error=personal`);
- revalidatePath(`/app/tasks/${taskId}`);
+ revalidatePath(`/app/tasks/${taskId}`);redirect(`/app/tasks/${taskId}?ok=saved`);
 }
 export async function postTaskNote(data:FormData){
  const {db,user}=await requireUser();const taskId=trimmed(data,"task_id");const body=trimmed(data,"body");
  if(!uid.safeParse(taskId).success||body.length<1||body.length>3000)return;
- await db.from("task_notes").insert({task_id:taskId,author_id:user.id,body});
- revalidatePath(`/app/tasks/${taskId}`);
+ const {error}=await db.from("task_notes").insert({task_id:taskId,author_id:user.id,body});
+ if(error)redirect(`/app/tasks/${taskId}?error=save`);
+ revalidatePath(`/app/tasks/${taskId}`);redirect(`/app/tasks/${taskId}?ok=saved`);
 }
 export async function addTaskStep(data:FormData){
  const {db}=await requireSupervisor();const taskId=trimmed(data,"task_id");const title=trimmed(data,"title");
  if(!uid.safeParse(taskId).success||title.length<3||title.length>180)return;
- await db.from("task_steps").insert({task_id:taskId,title});
- revalidatePath(`/app/tasks/${taskId}`);
+ const {error}=await db.from("task_steps").insert({task_id:taskId,title});
+ if(error)redirect(`/app/tasks/${taskId}?error=save`);
+ revalidatePath(`/app/tasks/${taskId}`);redirect(`/app/tasks/${taskId}?ok=saved`);
 }
 export async function toggleStep(data:FormData){
- const {db,user}=await requireUser();const taskId=trimmed(data,"task_id");const stepId=trimmed(data,"step_id");
+ const taskId=trimmed(data,"task_id"),stepId=trimmed(data,"step_id");
  if(!uid.safeParse(taskId).success||!uid.safeParse(stepId).success)return;
- const {data:existing}=await db.from("step_completions").select("step_id").eq("step_id",stepId).eq("user_id",user.id).maybeSingle();
- if(existing)await db.from("step_completions").delete().eq("step_id",stepId).eq("user_id",user.id);
- else await db.from("step_completions").insert({step_id:stepId,user_id:user.id});
- revalidatePath(`/app/tasks/${taskId}`);
- revalidatePath("/app/tasks");revalidatePath("/app");revalidatePath("/app/reports");
+ try{const current=await getTaskChecklist(taskId);const step=current.steps.find(s=>s.id===stepId);if(!step)throw new Error();await setChecklistStep(taskId,stepId,!step.checked);}catch{redirect(`/app/tasks/${taskId}?error=save`);}
+ redirect(`/app/tasks/${taskId}?ok=saved`);
 }
 
 export async function searchClients(term:string){
@@ -87,16 +87,21 @@ export async function searchClients(term:string){
 }
 export async function getTaskChecklist(taskId:string){
  const {db,user}=await requireUser();if(!uid.safeParse(taskId).success)throw new Error("invalid_task");
- const {data:task,error}=await db.from("tasks").select("id,status,progress").eq("id",taskId).single();
+ const {data:task,error}=await db.from("tasks").select("id,status,progress").is("deleted_at",null).eq("id",taskId).single();
  if(error||!task)throw new Error("task_unavailable");
  const [{data:steps,error:stepsError},{data:assignment}]=await Promise.all([
-  db.from("task_steps").select("id,title,sort_order").eq("task_id",taskId).order("sort_order").order("id"),
+  db.from("task_steps").select("id,title,stage_name,sort_order").eq("task_id",taskId).order("sort_order").order("id"),
   db.from("task_assignments").select("progress").eq("task_id",taskId).eq("user_id",user.id).maybeSingle()
  ]);
  if(stepsError)throw new Error("steps_unavailable");
  const {data:done,error:doneError}=steps?.length?await db.from("step_completions").select("step_id").eq("user_id",user.id).in("step_id",steps.map(s=>s.id)):{data:[],error:null};
  if(doneError)throw new Error("steps_unavailable");const ids=new Set((done||[]).map(d=>d.step_id));
- return {steps:(steps||[]).map(s=>({id:s.id,title:s.title,checked:ids.has(s.id)})),canEdit:!!assignment&&!["done","expired"].includes(task.status),progress:task.progress,myProgress:assignment?.progress??null};
+ const {data:members,error:membersError}=await db.from("task_assignments").select("user_id,progress,status").eq("task_id",taskId);
+ if(membersError)throw new Error("members_unavailable");
+ const {data:profiles,error:profilesError}=members&&members.length>1?await db.from("profiles").select("id,full_name").in("id",members.map(m=>m.user_id)):{data:[],error:null};
+ if(profilesError)throw new Error("members_unavailable");
+ const names=new Map((profiles||[]).map(p=>[p.id,p.full_name]));
+ return {members:members&&members.length>1?members.map(m=>({...m,name:names.get(m.user_id)||m.user_id})):[],steps:(steps||[]).map(s=>({id:s.id,title:s.title,stage:s.stage_name,checked:ids.has(s.id)})),canEdit:!!assignment&&!["done","expired"].includes(task.status),progress:task.progress,myProgress:assignment?.progress??null};
 }
 export async function setChecklistStep(taskId:string,stepId:string,checked:boolean){
  const {db,user}=await requireUser();if(!uid.safeParse(taskId).success||!uid.safeParse(stepId).success||typeof checked!=="boolean")throw new Error("invalid_step");
@@ -108,4 +113,18 @@ export async function setChecklistStep(taskId:string,stepId:string,checked:boole
  const updated=await getTaskChecklist(taskId);
  if(updated.steps.find(s=>s.id===stepId)?.checked!==checked)throw new Error("save_failed");
  revalidatePath(`/app/tasks/${taskId}`);revalidatePath("/app/tasks");revalidatePath("/app");revalidatePath("/app/reports");return updated;
+}
+
+export async function trashTask(form:FormData){
+ const {db}=await requireSupervisor();const id=String(form.get("task_id")),restore=form.get("restore")==="true";
+ if(!uid.safeParse(id).success)redirect("/app/tasks?error=invalid");
+ const {error}=await db.rpc("trash_task_secure",{p_task:id,p_restore:restore});
+ if(error)redirect("/app/tasks?error=permission");
+ revalidatePath("/app","layout");redirect(restore?"/app/tasks?ok=saved":"/app/tasks?ok=deleted");
+}
+export async function completeUnstagedTask(taskId:string,completed:boolean){
+ const {db}=await requireUser();if(!uid.safeParse(taskId).success||typeof completed!=="boolean")throw new Error("invalid");
+ const {error}=await db.rpc("complete_unstaged_task_secure",{p_task:taskId,p_completed:completed});
+ if(error)throw new Error("save_failed");
+ revalidatePath("/app","layout");return getTaskChecklist(taskId);
 }

@@ -21,3 +21,12 @@ export async function inviteTeamMember(form:FormData){
  if(roleError)redirect("/app/team?error=profile");
  revalidatePath("/app/team");redirect("/app/team?ok=1");
 }
+
+export async function manageTeamMember(form:FormData){
+ const {db}=await requireSupervisor();
+ const parsed=z.object({id:z.string().uuid(),role:z.enum(["employee","content_editor","supervisor"]),active:z.enum(["true","false"])}).safeParse({id:form.get("id"),role:form.get("role"),active:form.get("active")});
+ if(!parsed.success)redirect("/app/team?error=invalid");
+ const {error}=await db.rpc("manage_team_member_secure",{p_member:parsed.data.id,p_role:parsed.data.role,p_active:parsed.data.active==="true"});
+ if(error)redirect("/app/team?error="+(["self","last_supervisor"].includes(error.message)?error.message:"permission"));
+ revalidatePath("/app/team");redirect("/app/team?ok=saved");
+}
