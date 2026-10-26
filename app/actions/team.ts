@@ -19,7 +19,7 @@ export async function inviteTeamMember(form:FormData){
  if(error||!data.user)redirect("/app/team?error=invite");
  const {error:roleError}=await admin.from("profiles").update({full_name:p.data.full_name,role:p.data.role}).eq("id",data.user.id);
  if(roleError)redirect("/app/team?error=profile");
- revalidatePath("/app/team");redirect("/app/team?ok=1");
+ revalidatePath("/app/team");redirect("/app/team?ok=invited");
 }
 
 export async function manageTeamMember(form:FormData){

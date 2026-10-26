@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit",
     "test:smoke": "node --test scripts/smoke.mjs scripts/public-content.test.mjs",
     "test:ui": "node scripts/review/render-workspace.cjs",
-    "test:qa-harness": "node --test scripts/qa/helpers.test.mjs",
+    "test:qa-harness": "node --test scripts/qa/helpers.test.mjs scripts/qa/auth-flow.test.mjs",
     "test:db-security": "node --test scripts/qa/database-security.test.mjs",
     "test:analytics": "node --test scripts/qa/analytics.test.cjs"
   },

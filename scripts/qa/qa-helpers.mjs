@@ -1,5 +1,7 @@
 // AL AHRAM QA integration helpers. Native Node 20+ fetch; no service-role key.
 import assert from 'node:assert/strict';
+import {createInterface} from 'node:readline/promises';
+import {Writable} from 'node:stream';
 
 export const cfg = {
   url: (process.env.NEXT_PUBLIC_SUPABASE_URL || '').replace(/\/$/, ''),
@@ -18,6 +20,7 @@ export function validateConfig({mutating = false} = {}) {
   const u = new URL(cfg.url);
   assert.equal(u.protocol, 'https:', 'Only HTTPS Supabase QA projects are supported');
   assert.equal(u.hostname, `${cfg.projectRef}.supabase.co`, 'QA_PROJECT_REF must match Supabase host exactly');
+  assert.notEqual(cfg.projectRef, 'tfidmxlaugqcwskanmxk', 'The live AL AHRAM project cannot be used for synthetic QA');
   assert.ok(!u.username && !u.password && !u.port && !u.search && !u.hash && u.pathname==='/', 'QA URL must contain only the project origin');
   assert.equal(process.env.QA_PROJECT_PURPOSE, 'AL_AHRAM_DISPOSABLE_QA', 'Explicit dedicated QA purpose declaration required');
   // A name or ref cannot prove that a project is non-production. Owner approval is still required.
@@ -52,18 +55,50 @@ export async function request(path, {method='GET', jwt, body, headers={}} = {}) 
   return {status:response.status, ok:response.ok, data};
 }
 
-export async function signIn(email, password) {
+async function promptMfaCode() {
+  assert.ok(process.stdin.isTTY, 'MFA requires an interactive terminal or an explicit codeProvider for an isolated QA runner');
+  // Never echo or persist OTPs. This uses an existing verified factor; it does not enroll one.
+  const silentOutput=new Writable({write(_chunk,_encoding,callback){callback();}});
+  const input=createInterface({input:process.stdin,output:silentOutput,terminal:true});
+  process.stderr.write('Enter the current code for this QA account (hidden): ');
+  try { return (await input.question('')).trim(); }
+  finally { input.close();process.stderr.write('\n'); }
+}
+
+export async function signIn(email, password, {codeProvider=promptMfaCode, factorId}={}) {
   const r=await request('/auth/v1/token?grant_type=password', {method:'POST',body:{email,password}});
   assert.ok(r.ok && r.data?.access_token && r.data?.user?.id, `QA sign-in failed (HTTP ${r.status}); response body omitted to protect credentials`);
-  // This is a fail-closed test preflight, not server-side JWT verification.
-  const claims=JSON.parse(Buffer.from(r.data.access_token.split('.')[1],'base64url').toString());
-  assert.equal(claims.aal,'aal2','QA requires a real MFA-verified session; password-only fixtures cannot validate the production workspace');
-  return {jwt:r.data.access_token, id:r.data.user.id};
+  let jwt=r.data.access_token;
+  const decode=token=>{try{return JSON.parse(Buffer.from(token.split('.')[1],'base64url').toString());}catch{throw new Error('Invalid QA session token');}};
+  if(decode(jwt).aal!=='aal2'){
+    const factors=(r.data.user.factors||[]).filter(f=>f.factor_type==='totp'&&f.status==='verified'&&(!factorId||f.id===factorId));
+    assert.equal(factors.length,1,'QA requires one selected, verified TOTP factor; enrollment must be completed before running tests');
+    const factor=factors[0];
+    assert.match(factor.id,/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i,'Invalid QA factor ID');
+    const challenge=await request(`/auth/v1/factors/${factor.id}/challenge`,{method:'POST',jwt,body:{}});
+    assert.ok(challenge.ok&&challenge.data?.id,`QA MFA challenge failed (HTTP ${challenge.status})`);
+    const code=await codeProvider();
+    assert.ok(typeof code==='string'&&/^\d{6}$/.test(code),'A six-digit MFA code is required');
+    const verified=await request(`/auth/v1/factors/${factor.id}/verify`,{method:'POST',jwt,body:{challenge_id:challenge.data.id,code}});
+    assert.ok(verified.ok&&verified.data?.access_token,`QA MFA verification failed (HTTP ${verified.status}); response body omitted`);
+    jwt=verified.data.access_token;
+  }
+  const claims=decode(jwt);
+  assert.equal(claims.aal,'aal2','QA requires MFA-verified sessions');
+  assert.equal(claims.sub,r.data.user.id,'QA MFA must preserve the signed-in identity');
+  assert.ok(Number.isFinite(claims.exp)&&claims.exp*1000>Date.now(),'QA session has expired');
+  // Decoding claims alone does not verify a JWT. GoTrue validates the final token here.
+  const user=await request('/auth/v1/user',{jwt});
+  assert.ok(user.ok&&user.data?.id===r.data.user.id,'GoTrue did not validate the final QA session');
+  return {jwt,id:r.data.user.id};
 }
 
 export async function loginAll() {
   const sessions={};
-  for(const [role,[email,password]] of Object.entries(cfg.users)) sessions[role]=await signIn(email,password);
+  for(const [role,[email,password]] of Object.entries(cfg.users)) {
+    process.stderr.write(`Authenticating QA role: ${role}\n`);
+    sessions[role]=await signIn(email,password);
+  }
   assert.equal(new Set(Object.values(sessions).map(s=>s.id)).size,4,'Expected four distinct Auth identities');
   const expected={supervisor:'supervisor',employeeA:'employee',employeeB:'employee',editor:'content_editor'};
   for(const [role,session] of Object.entries(sessions)) {

@@ -14,6 +14,9 @@ Target: `tfidmxlaugqcwskanmxk` only. No production SQL applied in this change.
 |20261025210845|20261025211518|checklist_progress_article_media|
 |20261025222526|20261025223021|task_beneficiaries|
 |20261026074406|NOT APPLIED|task_analytics|
+|20261026140337|NOT APPLIED|workspace_experience|
+
+Both unapplied entries were rechecked against the dedicated live project's migration history on 2026-10-26 during release preparation. The live project contains operational tasks and must not be used for synthetic integration fixtures.
 
 Do not run a blind `db push`: existing remote versions differ from filenames.
 Review the new migration as a single forward-only change, back up, and apply only after approval. Do not edit previously applied migrations or rerun them.

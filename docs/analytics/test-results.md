@@ -1,5 +1,7 @@
 # Verification results — review branch
 
+Latest continuation and current deployment blockers: [release-readiness-20261026.md](release-readiness-20261026.md). The QA runner now has 14 passing unit tests and a real MFA challenge flow; real integration execution remains pending.
+
 No live database writes or Site publication occurred.
 
 | Check | Result | Limits |
