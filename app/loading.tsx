@@ -1,2 +1,2 @@
-import {PyramidLoader} from '@/components/pyramid-loader';
-export default function Loading(){return <div className="page-loading"><PyramidLoader/></div>;}
+import {PageLoading} from '@/components/page-loading';
+export default function Loading(){return <PageLoading/>;}

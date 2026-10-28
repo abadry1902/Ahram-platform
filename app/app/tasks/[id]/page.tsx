@@ -1,3 +1,4 @@
+import {TaskEditDialog} from "@/components/task-edit-dialog";
 import {TaskCompletion} from "@/components/task-completion";
 import {trashTask} from "@/app/actions/tasks";
 
@@ -32,7 +33,7 @@ export default async function TaskDetail({params,searchParams}:{params:Promise<{
  const closed=["done","expired"].includes(t.status);
  const canEditGlobal=leader&&(supervisor||t.status!=="awaiting_review");
  const shared=(assignments||[]).length>1;
- const {data:client}=t.client_id?await db.from("clients").select("name").eq("id",t.client_id).maybeSingle():{data:null};
+ const {data:client}=t.client_id?await db.from("clients").select("id,name").eq("id",t.client_id).maybeSingle():{data:null};
  const my=(assignments||[]).find(x=>x.user_id===user.id);
  const {data:attachments}=await db.from("task_attachments").select("id,filename,storage_path,byte_size,created_at").eq("task_id",id).order("created_at",{ascending:false});
  const signed=await Promise.all((attachments||[]).map(async f=>({id:f.id,name:f.filename,size:f.byte_size,url:(await db.storage.from("task-ops").createSignedUrl(f.storage_path,300)).data?.signedUrl||null})));
@@ -57,5 +58,5 @@ export default async function TaskDetail({params,searchParams}:{params:Promise<{
  {canEditGlobal&&!closed&&<Card className="card"><h2>{shared?tr("إدارة الحالة العامة"):(locale==="ar"?"حالة المهمة":"Task status")}</h2><p className="muted tiny">{tr("المشرف يراجع الإغلاق النهائي. يجب تسجيل سبب عند التوقف أو الانقضاء.")}</p><form action={setStatus}><input type="hidden" name="task_id" value={id}/><label className="form-field">{tr("الحالة")}<Select name="status" className="input" defaultValue={t.status}><option value="new">{tr("جديدة")}</option><option value="in_progress">{tr("قيد التنفيذ")}</option><option value="paused">{tr("متوقفة")}</option><option value="awaiting_review">{tr("بانتظار المراجعة")}</option>{supervisor&&<><option value="done">{tr("تامة — اعتماد")}</option><option value="expired">{tr("منقضية — إغلاق")}</option></>}</Select></label><label className="form-field">{tr("سبب التوقف/الانقضاء (إلزامي للحالتين)")}<Textarea className="input" name="reason" style={{minHeight:85}} placeholder={tr("اكتب السبب هنا")}/></label><Button className="button alt">{tr("حفظ الحالة")}</Button></form></Card>}
  {!supervisor&&t.status==="awaiting_review"&&<div className="notice">{tr("المهمة بانتظار قرار المشرف العام، ولا يمكن تعديل الحالة العامة حتى انتهاء المراجعة.")}</div>}
  {closed&&<div className="notice">{t.status==="done"?tr("المهمة تامة ومعتمدة من المشرف."):tr("المهمة منقضية ومؤرشفة.")}</div>}
- {supervisor&&<form action={trashTask} className="card"><input type="hidden" name="task_id" value={id}/><p className="muted tiny">{locale==="ar"?"نقل إلى المحذوفات مع الاحتفاظ بالسجل وإمكانية الاسترجاع.":"Move to the bin while retaining history and recovery."}</p><Button className="button outline">{locale==="ar"?"حذف المهمة":"Delete task"}</Button></form>}</aside></div></>;
+ {supervisor&&<section className="card"><p className="muted tiny">{locale==="ar"?"إدارة بيانات المهمة أو نقلها للمحذوفات مع الاحتفاظ بالسجل.":"Manage task details or move it to the bin while retaining history."}</p><div className="task-edit-actions">{!closed&&<TaskEditDialog task={{...t,updated_at:task.updated_at}} locale={locale} members={(assignments||[]).map(a=>({id:a.user_id,full_name:names.get(a.user_id)||tr("عضو الفريق")}))} client={client}/>}<form action={trashTask}><input type="hidden" name="task_id" value={id}/><Button className="button outline">{locale==="ar"?"حذف المهمة":"Delete task"}</Button></form></div></section>}</aside></div></>;
 }

@@ -374,3 +374,26 @@ test('notifications, push tokens and push queue cannot leak between team members
  await deny(()=>authenticated(ids.employee,()=>query('select * from public.push_outbox')),/permission/);
  assert.ok((await query('select notification_id from public.push_outbox')).length);
 });
+
+test('task detail edits require supervisor/MFA, preserve progress/baseline and reject stale or closed changes',async()=>{
+ const id=await authenticated(ids.supervisor,()=>createTask('LOCAL QA editable details',[ids.employee],ids.employee));
+ const initial=(await query('select * from public.tasks where id=$1',[id]))[0];
+ const baseline=(await query('select measurement_due_at from public.task_assignments where task_id=$1',[id]))[0].measurement_due_at;
+ const edit=(stamp,leader=ids.employee)=>query('select public.edit_task_details_secure($1,$2,$3,$4,$5,$6,$7,$8)',[id,'LOCAL QA updated details','Updated description','urgent','2026-12-01T10:00:00Z',null,leader,stamp]);
+ await deny(()=>authenticated(ids.employee,()=>edit(initial.updated_at)),/permission/);
+ await deny(()=>authenticated(ids.supervisor,()=>edit(initial.updated_at,ids.editor)),/invalid leader/);
+ await query("select set_config('request.jwt.claim.aal','aal1',false)");
+ try{await deny(()=>authenticated(ids.supervisor,()=>edit(initial.updated_at)),/permission/);}finally{await query("select set_config('request.jwt.claim.aal','aal2',false)");}
+ await authenticated(ids.supervisor,()=>edit(initial.updated_at));
+ const current=(await query('select * from public.tasks where id=$1',[id]))[0];
+ assert.equal(current.title,'LOCAL QA updated details');assert.equal(current.priority,'urgent');assert.equal(current.progress,initial.progress);assert.equal(current.status,initial.status);
+ assert.equal((await query('select measurement_due_at from public.task_assignments where task_id=$1',[id]))[0].measurement_due_at,baseline);
+ assert.equal((await query('select count(*)::int n from public.task_deadline_history where task_id=$1',[id]))[0].n,1);
+ assert.equal((await query("select count(*)::int n from public.task_activity where task_id=$1 and action='details_updated'",[id]))[0].n,1);
+ await deny(()=>authenticated(ids.supervisor,()=>edit(initial.updated_at)),/conflict/);
+ await authenticated(ids.supervisor,()=>query('select public.trash_task_secure($1,false)',[id]));
+ await deny(()=>authenticated(ids.supervisor,()=>edit(current.updated_at)),/not editable/);
+ await authenticated(ids.supervisor,()=>query('select public.trash_task_secure($1,true)',[id]));
+ await authenticated(ids.supervisor,()=>status(id,'expired','Synthetic QA closure reason'));
+ await deny(()=>authenticated(ids.supervisor,()=>edit(current.updated_at)),/not editable/);
+});

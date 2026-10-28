@@ -128,3 +128,17 @@ export async function completeUnstagedTask(taskId:string,completed:boolean){
  if(error)throw new Error("save_failed");
  revalidatePath("/app","layout");return getTaskChecklist(taskId);
 }
+
+export async function editTask(data:FormData){
+ const {db}=await requireSupervisor();const id=trimmed(data,'task_id');
+ if(!uid.safeParse(id).success)redirect('/app/tasks?error=invalid');
+ const result=taskSchema.safeParse({title:trimmed(data,'title'),description:trimmed(data,'description'),priority:trimmed(data,'priority'),due_at:trimmed(data,'due_at'),leader_id:trimmed(data,'leader_id')});
+ const clientId=trimmed(data,'client_id'),expected=trimmed(data,'expected_updated_at');
+ if(!result.success||(clientId&&!uid.safeParse(clientId).success)||!expected||Number.isNaN(Date.parse(expected)))redirect(`/app/tasks/${id}?error=invalid`);
+ if(trimmed(data,'client_search')&&!clientId)redirect(`/app/tasks/${id}?error=select_client`);
+ const due=result.data.due_at?new Date(result.data.due_at):null;
+ if(due&&Number.isNaN(due.getTime()))redirect(`/app/tasks/${id}?error=date`);
+ const {error}=await db.rpc('edit_task_details_secure',{p_task_id:id,p_title:result.data.title,p_description:result.data.description||null,p_priority:result.data.priority,p_due_at:due?.toISOString()||null,p_client_id:clientId||null,p_leader_id:result.data.leader_id||null,p_expected_updated_at:expected});
+ if(error)redirect(`/app/tasks/${id}?error=${error.message==='conflict'?'conflict':'edit'}`);
+ revalidatePath('/app','layout');redirect(`/app/tasks/${id}?ok=saved`);
+}
