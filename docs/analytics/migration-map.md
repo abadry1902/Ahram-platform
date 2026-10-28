@@ -1,3 +1,5 @@
+> Current status: see [client demo 2026-10-28](client-demo-20261028.md). The NOT APPLIED statements below are historical; all three forward migrations are now applied to the dedicated project.
+
 # Migration history mapping — read-only verification 2026-10-26
 
 Target: `tfidmxlaugqcwskanmxk` only. No production SQL applied in this change.
