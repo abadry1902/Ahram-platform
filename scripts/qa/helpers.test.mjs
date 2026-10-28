@@ -41,6 +41,8 @@ test('configuration refuses wrong origin, duplicate accounts and missing write o
   process.env.QA_PROJECT_PURPOSE='AL_AHRAM_DISPOSABLE_QA';delete process.env.QA_MUTATION_CONFIRM;
   validateConfig();assert.throws(()=>validateConfig({mutating:true}));
   cfg.url='https://unrelated.supabase.co';assert.throws(()=>validateConfig());
+  cfg.url='https://tfidmxlaugqcwskanmxk.supabase.co';cfg.projectRef='tfidmxlaugqcwskanmxk';assert.throws(()=>validateConfig(),/live AL AHRAM/);
+  cfg.projectRef='syntheticqa';
   cfg.url='https://syntheticqa.supabase.co?token=synthetic';assert.throws(()=>validateConfig());
   cfg.url='https://syntheticqa.supabase.co';cfg.users.employeeB=cfg.users.employeeA;assert.throws(()=>validateConfig());
  } finally {

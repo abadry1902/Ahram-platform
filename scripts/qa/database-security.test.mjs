@@ -1,6 +1,6 @@
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile, readdir, mkdir, writeFile } from 'node:fs/promises';
 import { PGlite } from '@electric-sql/pglite';
 import { pgcrypto } from '@electric-sql/pglite/contrib/pgcrypto';
 
@@ -63,6 +63,12 @@ before(async () => {
   `);
   const dir = new URL('../../supabase/migrations/', import.meta.url);
   for (const file of (await readdir(dir)).filter(f=>f.endsWith('.sql')).sort()) {
+    if(file.endsWith('_task_analytics.sql')){
+      await db.exec(`insert into auth.users(id,raw_user_meta_data) values('20000000-0000-4000-8000-000000000001','{}');
+      insert into public.tasks(id,title,created_by,due_at) values('20000000-0000-4000-8000-000000000002','LOCAL QA historical completion','20000000-0000-4000-8000-000000000001','2026-01-01');
+      insert into public.task_assignments(task_id,user_id,progress,status) values('20000000-0000-4000-8000-000000000002','20000000-0000-4000-8000-000000000001',100,'completed');
+      update public.tasks set status='done' where id='20000000-0000-4000-8000-000000000002';`);
+    }
     await db.exec(await readFile(new URL(file, dir), 'utf8'));
   }
   for (const [name,id] of Object.entries(ids)) {
@@ -126,7 +132,7 @@ test('four equal steps produce 25/75 percent and shared progress averages all me
 
 test('all application tables have RLS and clients cannot create public objects', async()=>{
   const tables = await query("select relname,relrowsecurity from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r'");
-  assert.equal(tables.length,17);
+  assert.equal(tables.length,24);
   assert.ok(tables.every(t=>t.relrowsecurity));
   for (const role of ['anon','authenticated']) {
     assert.equal((await query("select has_schema_privilege($1,'public','create') as allowed",[role]))[0].allowed,false);
@@ -250,5 +256,121 @@ test('MFA is enforced for direct table reads and leader RPCs, including enrolled
   await deny(()=>authenticated(ids.supervisor,()=>status(leaderlessTask,'in_progress')),/MFA required/);
   assert.equal((await as('anon',null,()=>query("select id from public.articles where status='published'"))).length,1);
  } finally {await query("select set_config('request.jwt.claim.aal','aal2',false)");}
- assert.equal((await authenticated(ids.supervisor,()=>query('select id from public.tasks'))).length,3);
+ assert.equal((await authenticated(ids.supervisor,()=>query('select id from public.tasks'))).length,4);
+});
+
+test('analytics RPCs respect task scope, MFA, paging, literal search and exact KPI counts',async()=>{
+ const page=(f={},n=1,size=25)=>query('select public.task_page_v1($1,$2,$3) as value',[f,n,size]).then(r=>r[0].value);
+ const metrics=f=>query('select public.task_metrics_v1($1) as value',[f]).then(r=>r[0].value);
+ const employee=await authenticated(ids.employee,()=>page());
+ assert(!employee.items.some(t=>t.id===otherTask));
+ const totals=await authenticated(ids.employee,()=>metrics({}));assert.equal(employee.total,totals.total);
+ const all=await authenticated(ids.supervisor,()=>page());assert(all.total>employee.total);
+ const first=await authenticated(ids.supervisor,()=>page({},1,1));const second=await authenticated(ids.supervisor,()=>page({},2,1));assert.equal(first.items.length,1);assert.notEqual(first.items[0].id,second.items[0].id);assert.equal(first.total,second.total);
+ assert.equal((await authenticated(ids.supervisor,()=>page({q:sharedTask.slice(0,15)}))).items[0].id,sharedTask);
+ assert.equal((await authenticated(ids.supervisor,()=>page({q:"%' OR true --"}))).total,0);
+ const shared=await authenticated(ids.supervisor,()=>page({shared:'1'}));assert(shared.items.every(t=>t.memberCount>1));
+ const single=await authenticated(ids.supervisor,()=>page({shared:'0'}));assert(single.items.every(t=>t.memberCount<=1));
+ await deny(()=>authenticated(ids.employee,()=>query("select public.task_report_v1('{}')")),/Supervisor only/);
+ await deny(()=>as('anon',null,()=>page()),/permission denied/);
+ await query("select set_config('request.jwt.claim.aal','aal1',false)");try{assert.equal((await authenticated(ids.employee,()=>page())).total,0);}finally{await query("select set_config('request.jwt.claim.aal','aal2',false)");}
+});
+
+test('completion provenance cannot be forged and reopening keeps immutable events and frozen deadlines',async()=>{
+ const task=await authenticated(ids.supervisor,()=>createTask('LOCAL QA provenance',[ids.employee],ids.employee));
+ await query("update public.tasks set due_at=now()+interval '2 days' where id=$1",[task]);
+ // First deadline was null when assignment was created: later edits cannot make it eligible.
+ await authenticated(ids.employee,()=>query("update public.task_assignments set completed_at='2000-01-01',measurement_due_at='2099-01-01',tracking_started_at='2000-01-01' where task_id=$1 and user_id=$2",[task,ids.employee]));
+ let a=(await query('select * from public.task_assignments where task_id=$1',[task]))[0];assert.equal(a.completed_at,null);assert.equal(a.measurement_due_at,null);
+ await authenticated(ids.employee,()=>query("update public.task_assignments set progress=100 where task_id=$1 and user_id=$2",[task,ids.employee]));
+ a=(await query('select * from public.task_assignments where task_id=$1',[task]))[0];assert(a.completed_at);assert(new Date(a.completed_at)>new Date('2026-01-01'));
+ await authenticated(ids.employee,()=>query("update public.task_assignments set progress=50 where task_id=$1 and user_id=$2",[task,ids.employee]));
+ assert.equal((await query('select completed_at from public.task_assignments where task_id=$1',[task]))[0].completed_at,null);
+ assert.deepEqual((await query('select kind from public.assignment_events where task_id=$1 order by id',[task])).map(e=>e.kind),['completed','reopened']);
+ await deny(()=>authenticated(ids.employee,()=>query('delete from public.assignment_events where task_id=$1',[task])),/permission denied/);
+ assert.equal((await authenticated(ids.editor,()=>query('select * from public.assignment_events where task_id=$1',[task]))).length,0);
+ assert.equal((await query('select * from public.task_deadline_history where task_id=$1',[task])).length,1);
+ await query('delete from public.tasks where id=$1',[task]);
+});
+
+test('on-time uses individual completion, excludes missing deadlines and exports match one snapshot',async()=>{
+ const task=(await authenticated(ids.supervisor,()=>query("select public.create_task_secure($1,null,'high',now()+interval '1 day',$2,$3) as id",['LOCAL QA on-time',[ids.employee],ids.employee])))[0].id;
+ await authenticated(ids.employee,()=>query("update public.task_assignments set progress=100 where task_id=$1 and user_id=$2",[task,ids.employee]));
+ const f={q:task};const report=(await authenticated(ids.supervisor,()=>query('select public.task_report_v1($1) as value',[f])))[0].value;
+ assert.equal(report.metrics.total,1);assert.equal(report.metrics.done,0);assert.equal(report.team[0].completed,1);assert.equal(report.team[0].on_time,1);assert.equal(report.team[0].eligible,1);
+ const snapshot=(await authenticated(ids.supervisor,()=>query("select public.report_export_v1($1,'xlsx') as value",[f])))[0].value;
+ await mkdir('.review/analytics',{recursive:true});await writeFile('.review/analytics/sample-snapshot.json',JSON.stringify(snapshot,null,2));
+ assert.equal(snapshot.tasks.length,snapshot.report.metrics.total);assert.deepEqual(snapshot.report.metrics,report.metrics);
+ await deny(()=>authenticated(ids.employee,()=>query("select public.report_export_v1('{}','xlsx')")),/Supervisor only/);
+ for(let n=0;n<4;n++)await authenticated(ids.supervisor,()=>query("select public.report_export_v1($1,'xlsx')",[f]));
+ await assert.rejects(()=>authenticated(ids.supervisor,()=>query("select public.report_export_v1($1,'xlsx')",[f])),/Export rate limit/);
+ await query('delete from public.report_exports');await query('delete from public.tasks where id=$1',[task]);
+});
+
+test('benchmark exact counts over 100, 1000 and 10000 synthetic tasks (isolated PostgreSQL)',async()=>{
+ const timings=[];
+ for(const size of [100,1000,10000]){
+  await query("insert into public.tasks(title,created_by) select 'BENCH fixture '||n,$1 from generate_series(1,$2::integer) n",[ids.supervisor,size]);
+  const start=performance.now();const result=await authenticated(ids.supervisor,()=>query("select public.task_page_v1('{\"q\":\"BENCH fixture\"}',1,25) as page,public.task_metrics_v1('{\"q\":\"BENCH fixture\"}') as metrics"));
+  timings.push({tasks:size,ms:Math.round((performance.now()-start)*100)/100});assert.equal(result[0].page.total,size);assert.equal(result[0].metrics.total,size);assert.equal(result[0].page.items.length,25);
+  await query("delete from public.tasks where title like 'BENCH fixture %'");
+ }
+ console.log('LOCAL PGlite benchmark (not production latency): '+JSON.stringify(timings));
+});
+
+test('Cairo date filters use midnight and exclusive next-day boundaries',async()=>{
+ const rows=await query("insert into public.tasks(title,created_by,created_at) values('LOCAL QA Cairo prior',$1,'2026-10-25T20:59:59Z'),('LOCAL QA Cairo start',$1,'2026-10-25T21:00:00Z'),('LOCAL QA Cairo next',$1,'2026-10-26T21:00:00Z') returning id",[ids.supervisor]);
+ const value=(await authenticated(ids.supervisor,()=>query('select public.task_page_v1($1) as value',[{q:'LOCAL QA Cairo',from:'2026-10-26',to:'2026-10-26'}])))[0].value;
+ assert.equal(value.total,1);assert.equal(value.items[0].title,'LOCAL QA Cairo start');await query('delete from public.tasks where id=any($1::uuid[])',[rows.map(r=>r.id)]);
+});
+
+test('migration preserves historical completion as unknown and restores original trigger modes',async()=>{
+ const a=(await query("select * from public.task_assignments where task_id='20000000-0000-4000-8000-000000000002'"))[0];
+ assert.equal(a.progress,100);assert.equal(a.status,'completed');assert.equal(a.completed_at,null);assert.equal(a.assigned_at,null);assert(a.measurement_due_at);
+ assert.equal((await query("select * from public.assignment_events where task_id='20000000-0000-4000-8000-000000000002'")).length,0);
+ assert((await query("select tgenabled from pg_trigger where tgrelid='public.task_assignments'::regclass and not tgisinternal")).every(t=>t.tgenabled==='O'));
+});
+
+
+test('recoverable task deletion is supervisor-only, excludes metrics and preserves history',async()=>{
+ const task=await authenticated(ids.supervisor,()=>createTask('LOCAL QA recoverable task',[ids.employee],ids.employee));
+ await deny(()=>authenticated(ids.employee,()=>query('select public.trash_task_secure($1,false)',[task])),/Supervisor/);
+ await authenticated(ids.supervisor,()=>query('select public.trash_task_secure($1,false)',[task]));
+ assert.equal((await authenticated(ids.employee,()=>query('select id from public.tasks where id=$1',[task]))).length,0);
+ assert.equal((await authenticated(ids.supervisor,()=>query('select id from public.filtered_tasks_v1($1) where id=$2',['{}',task]))).length,0);
+ await deny(()=>authenticated(ids.supervisor,()=>status(task,"in_progress")),/Deleted/);
+ await authenticated(ids.supervisor,()=>query('select public.trash_task_secure($1,true)',[task]));
+ assert.equal((await authenticated(ids.employee,()=>query('select id from public.tasks where id=$1',[task]))).length,1);
+ assert.equal((await query("select action from public.task_activity where task_id=$1 and action in ('soft_deleted','restored')",[task])).length,2);
+});
+test('unstaged completion changes own progress only and never approves closure',async()=>{
+ const task=await authenticated(ids.supervisor,()=>createTask('LOCAL QA no stages',[ids.employee,ids.leader],ids.leader));
+ await authenticated(ids.employee,()=>query('select public.complete_unstaged_task_secure($1,true)',[task]));
+ assert.equal((await query('select progress from public.task_assignments where task_id=$1 and user_id=$2',[task,ids.employee]))[0].progress,100);
+ const row=(await query('select progress,status from public.tasks where id=$1',[task]))[0];assert.equal(row.progress,50);assert.equal(row.status,'new');
+ await deny(()=>authenticated(ids.editor,()=>query('select public.complete_unstaged_task_secure($1,true)',[task])),/Not assigned/);
+ await authenticated(ids.employee,()=>query('select public.complete_unstaged_task_secure($1,false)',[task]));
+ assert.equal((await query('select progress from public.tasks where id=$1',[task]))[0].progress,0);
+ await authenticated(ids.supervisor,()=>query("insert into public.task_steps(task_id,title) values($1,'QA stage')",[task]));
+ await deny(()=>authenticated(ids.employee,()=>query('select public.complete_unstaged_task_secure($1,true)',[task])),/Use checklist/);
+});
+test('team management cannot self-escalate; disabling immediately revokes an existing session and is reversible',async()=>{
+ await deny(()=>authenticated(ids.employee,()=>query('select public.manage_team_member_secure($1,$2,true)',[ids.employee,'supervisor'])),/permission/);
+ await deny(()=>authenticated(ids.supervisor,()=>query('select public.manage_team_member_secure($1,$2,false)',[ids.supervisor,'employee'])),/self/);
+ const task=await authenticated(ids.supervisor,()=>createTask('LOCAL QA inactive leader',[ids.leader],ids.leader));
+ await authenticated(ids.supervisor,()=>query('select public.manage_team_member_secure($1,$2,false)',[ids.leader,'employee']));
+ assert.equal((await authenticated(ids.leader,()=>query('select id from public.tasks'))).length,0);
+ await deny(()=>authenticated(ids.leader,()=>status(task,'in_progress')),/Inactive/);
+ await authenticated(ids.supervisor,()=>query('select public.manage_team_member_secure($1,$2,true)',[ids.leader,'employee']));
+ assert.equal((await authenticated(ids.leader,()=>query('select id from public.tasks where id=$1',[task]))).length,1);
+});
+test('notifications, push tokens and push queue cannot leak between team members',async()=>{
+ const task=await authenticated(ids.supervisor,()=>createTask('LOCAL QA notification scope',[ids.employee],ids.employee));
+ const mine=await authenticated(ids.employee,()=>query('select id from public.notifications where task_id=$1',[task]));assert.ok(mine.length);
+ assert.equal((await authenticated(ids.editor,()=>query('select id from public.notifications where task_id=$1',[task]))).length,0);
+ await authenticated(ids.employee,()=>query("insert into public.push_subscriptions(endpoint,p256dh,auth_key) values('https://fcm.googleapis.com/qa','QA-public-key','QA-auth-key')"));
+ assert.equal((await authenticated(ids.editor,()=>query('select id from public.push_subscriptions'))).length,0);
+ await deny(()=>authenticated(ids.employee,()=>query('select * from public.claim_push_batch()')),/permission/);
+ await deny(()=>authenticated(ids.employee,()=>query('select * from public.push_outbox')),/permission/);
+ assert.ok((await query('select notification_id from public.push_outbox')).length);
 });

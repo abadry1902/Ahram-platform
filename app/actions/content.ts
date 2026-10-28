@@ -29,10 +29,10 @@ export async function setArticleState(form:FormData){
 }
 export async function addUsefulLink(form:FormData){
  const {db}=await requireSupervisor();
- const schema=z.object({name_ar:z.string().min(3).max(180),name_en:z.string().max(180),description_ar:z.string().max(300),description_en:z.string().max(300),category:z.string().max(60),href:z.string().url().startsWith("https://")});
- const p=schema.safeParse(Object.fromEntries(["name_ar","name_en","description_ar","description_en","category","href"].map(k=>[k,String(form.get(k)||"").trim()])));
+ const schema=z.object({name_ar:z.string().min(3).max(180),name_en:z.string().max(180),description_ar:z.string().max(300),description_en:z.string().max(300),category:z.string().max(60),image_url:z.union([z.string().url().startsWith("https://").max(2048),z.literal("")]),href:z.string().url().startsWith("https://")});
+ const p=schema.safeParse(Object.fromEntries(["name_ar","name_en","description_ar","description_en","category","href","image_url"].map(k=>[k,String(form.get(k)||"").trim()])));
  if(!p.success)redirect("/app/links?error=validation");
- const {error}=await db.from("useful_links").insert({...p.data,is_published:false});
+ const {error}=await db.from("useful_links").insert({...p.data,image_url:p.data.image_url||null,is_published:false});
  revalidatePath("/app/links");redirect(error?"/app/links?error=save":"/app/links?ok=1");
 }
 export async function toggleUsefulLink(form:FormData){
@@ -41,4 +41,16 @@ export async function toggleUsefulLink(form:FormData){
  const {data:link}=await db.from("useful_links").select("is_published").eq("id",id).maybeSingle();
  if(link)await db.from("useful_links").update({is_published:!link.is_published}).eq("id",id);
  revalidatePath("/app/links");revalidatePath("/ar/links");revalidatePath("/en/links");
+}
+
+export async function savePublicImage(form:FormData){
+ const {db}=await requireSupervisor();const kind=String(form.get('kind')),id=String(form.get('id')),url=String(form.get('image_url')||'').trim();
+ if(url&&!z.string().url().startsWith('https://').max(2048).safeParse(url).success)redirect('/app/links?error=image');
+ if(kind==='service'){
+ if(!['corporate','litigation','real-estate','labor','family','advisory'].includes(id))redirect('/app/links?error=invalid');
+ const {error}=url?await db.from('service_media').upsert({service_key:id,image_url:url}):await db.from('service_media').delete().eq('service_key',id);if(error)redirect('/app/links?error=save');
+ }else{
+ if(!z.string().uuid().safeParse(id).success)redirect('/app/links?error=invalid');const {error}=await db.from('useful_links').update({image_url:url||null}).eq('id',id);if(error)redirect('/app/links?error=save');
+ }
+ revalidatePath('/ar','layout');revalidatePath('/en','layout');revalidatePath('/app/links');redirect('/app/links?ok=1');
 }

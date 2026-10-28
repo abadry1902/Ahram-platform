@@ -1,0 +1,2 @@
+export function pushReady(){return !!(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY&&process.env.VAPID_PRIVATE_KEY&&process.env.VAPID_SUBJECT&&process.env.PUSH_CRON_SECRET&&process.env.SUPABASE_SERVICE_ROLE_KEY);}
+export function allowedPushEndpoint(value:string){try{const u=new URL(value);return u.protocol==="https:"&&!u.username&&!u.password&&!u.port&&["fcm.googleapis.com","updates.push.services.mozilla.com","web.push.apple.com"].some(host=>u.hostname===host);}catch{return false;}}

@@ -1,0 +1,300 @@
+[
+  {
+    "route": "/ar",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/about",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/about",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/about",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/services",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/services",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/services",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/articles",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/articles",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/articles",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/links",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/links",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/links",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/privacy",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/privacy",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/privacy",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/contact",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/contact",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/ar/contact",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/about",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/about",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/about",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/services",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/services",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/services",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/articles",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/articles",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/articles",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/links",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/links",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/links",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/privacy",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/privacy",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/privacy",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/contact",
+    "size": "desktop",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/contact",
+    "size": "tablet",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/en/contact",
+    "size": "mobile",
+    "status": 200,
+    "overflow": false,
+    "mode": "Next.js local application"
+  },
+  {
+    "route": "/app/tasks",
+    "unauthenticatedRedirect": true
+  }
+]

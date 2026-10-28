@@ -11,7 +11,7 @@ export async function POST(request:NextRequest){
  if(profile?.role!=="supervisor")return NextResponse.json({error:"Forbidden"},{status:403});
  let json:unknown;try{json=await request.json();}catch{return NextResponse.json({error:"Invalid JSON"},{status:400});}
  const p=payload.safeParse(json);if(!p.success)return NextResponse.json({error:"Invalid import rows"},{status:400});
- const {data:staff}=await db.from("profiles").select("id,full_name");
+ const {data:staff}=await db.from("profiles").select("id,full_name").eq("is_active",true);
  const byName=new Map((staff||[]).map(x=>[x.full_name.trim().toLowerCase(),x.id]));
  if(!staff?.some(x=>x.id===p.data.default_assignee))return NextResponse.json({error:"Default assignee not found"},{status:400});
  let added=0;const errors:{row:number;reason:string}[]=[];const known=new Set<string>();
@@ -28,7 +28,7 @@ export async function POST(request:NextRequest){
   const {data:duplicate}=await db.from("tasks").select("id").eq("title",r.title).limit(1);
   if(duplicate?.length){errors.push({row:index+1,reason:"Existing task title"});continue;}
   const {error}=await db.rpc("create_task_secure",{p_title:r.title,p_description:r.description||null,p_priority:r.priority,p_due_at:r.due_at||null,p_assignee_ids:assignees,p_leader_id:leader});
-  if(error)errors.push({row:index+1,reason:error.message});else added++;
+  if(error)errors.push({row:index+1,reason:"Task could not be saved (AHRAM-IMPORT-SAVE)"});else added++;
  }
  return NextResponse.json({added,skipped:errors.length,errors,notice:"Each valid task is committed individually; if some rows failed, the successful ones remain saved."});
 }

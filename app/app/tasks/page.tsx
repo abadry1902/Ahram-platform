@@ -1,45 +1,15 @@
-import {ClientPicker} from "@/components/client-picker";
-import {TaskList} from "@/components/task-list";
-
-import {Input,Select,Button,TableContainer,DataTable} from "@/components/ui";
-import {workspaceI18n} from "@/lib/workspace-locale";
-import {requireUser} from "@/lib/auth";
-import {TaskStatusBadge,Progress} from "@/components/task-status";
-import {formatDate} from "@/lib/i18n";
-import type {Task,TaskStatus} from "@/lib/types";
-import Link from "next/link";
-export default async function TasksPage({searchParams}:{searchParams:Promise<{q?:string;status?:TaskStatus;from?:string;to?:string;date_field?:string;shared?:string;priority?:string;preset?:string;client_id?:string}>}){
- const {locale,t:tr}=await workspaceI18n();
- const {db,profile}=await requireUser();const s=await searchParams;
- let query=db.from("tasks").select("id,title,status,priority,progress,due_at,created_at,closed_at,leader_id,client_id").order("created_at",{ascending:false}).limit(250);
- if(s.status&&["new","in_progress","paused","awaiting_review","done","expired"].includes(s.status))query=query.eq("status",s.status);
- if(s.priority&&["low","medium","high","urgent"].includes(s.priority))query=query.eq("priority",s.priority);
- if(s.client_id&&/^[0-9a-f-]{36}$/i.test(s.client_id))query=query.eq("client_id",s.client_id);
- const now=new Date();const day=(d:Date)=>d.toISOString().slice(0,10);
- const presetRanges:Record<string,[string,string]>={
-  today:[day(now),day(now)],
-  last7:[day(new Date(now.getTime()-6*86400000)),day(now)],
-  last30:[day(new Date(now.getTime()-29*86400000)),day(now)],
-  thisMonth:[day(new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),1))),day(now)]
- };
- const [from,to]=presetRanges[s.preset||""]||[s.from||"",s.to||""];
- const dateField=["created_at","due_at","closed_at"].includes(s.date_field||"")?s.date_field!:"created_at";
- if(from&&/^\d{4}-\d{2}-\d{2}$/.test(from))query=query.gte(dateField,`${from}T00:00:00Z`);
- if(to&&/^\d{4}-\d{2}-\d{2}$/.test(to))query=query.lte(dateField,`${to}T23:59:59Z`);
- if(s.q)query=query.ilike("title",`%${s.q.slice(0,100).replace(/[%,]/g,"")}%`);
- const {data,error}=await query;let items=(data||[]) as Task[];
- const [{data:assignments},{data:clients},{data:selectedClient}]=await Promise.all([
- items.length?db.from("task_assignments").select("task_id").in("task_id",items.map(t=>t.id)):Promise.resolve({data:[]}),
- db.from("clients").select("id,name").order("name").limit(50),
- s.client_id?db.from("clients").select("id,name").eq("id",s.client_id).maybeSingle():Promise.resolve({data:null})
- ]);
- const counts=new Map<string,number>();assignments?.forEach(a=>counts.set(a.task_id,(counts.get(a.task_id)||0)+1));
- if(s.shared==="1")items=items.filter(t=>(counts.get(t.id)||0)>1);
- const clientIds=[...new Set(items.map(t=>t.client_id).filter((id):id is string=>!!id))];
- const {data:taskClients}=clientIds.length?await db.from("clients").select("id,name").in("id",clientIds):{data:[]};
- const names=new Map((taskClients||[]).map(c=>[c.id,c.name]));
- return <><div className="title-row"><div><span className="eyebrow">TASKS</span><h1>{s.shared==="1"?tr("المهام المشتركة"):tr("إدارة المهام")}</h1><p className="muted">{tr("ابحث وصنف حسب الحالة والأولوية وتواريخ الإنشاء والاستحقاق والإغلاق.")}</p></div>{profile.role==="supervisor"&&<Link className="button" href="/app/tasks/new">{tr("+ مهمة جديدة")}</Link>}</div>
- <form method="get" action="/app/tasks" className="card task-filters" style={{marginBottom:16}}>{s.shared==="1"&&<input type="hidden" name="shared" value="1"/>}<div className="grid" style={{gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:12}}><ClientPicker locale={locale} initial={clients||[]} selected={selectedClient}/><label className="form-field">{tr("بحث")}<Input name="q" className="input" defaultValue={s.q||""} placeholder={tr("عنوان المهمة")}/></label></div><details className="task-advanced-filters" open={!!(s.status||s.priority||s.from||s.to||s.preset)}><summary>{locale==="ar"?"فلاتر إضافية: الحالة والتاريخ والأولوية":"More filters: status, dates and priority"}</summary><div className="grid" style={{gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:12}}><label className="form-field">{tr("الحالة")}<Select className="input" name="status" defaultValue={s.status||""}><option value="">{tr("الكل")}</option>{Object.entries({new:tr("جديدة"),in_progress:tr("قيد التنفيذ"),paused:tr("متوقفة"),awaiting_review:tr("بانتظار المراجعة"),done:tr("تامة"),expired:tr("منقضية")}).map(([value,label])=><option key={value} value={value}>{label}</option>)}</Select></label><label className="form-field">{tr("الأولوية")}<Select className="input" name="priority" defaultValue={s.priority||""}><option value="">{tr("كل الأولويات")}</option><option value="low">{tr("منخفضة")}</option><option value="medium">{tr("متوسطة")}</option><option value="high">{tr("عالية")}</option><option value="urgent">{tr("عاجلة")}</option></Select></label><label className="form-field">{tr("الفترة")}<Select className="input" name="preset" defaultValue={s.preset||""}><option value="">{tr("فترة مخصصة")}</option><option value="today">{tr("اليوم")}</option><option value="last7">{tr("آخر 7 أيام")}</option><option value="last30">{tr("آخر 30 يومًا")}</option><option value="thisMonth">{tr("الشهر الحالي")}</option></Select></label><label className="form-field">{tr("نوع التاريخ")}<Select className="input" name="date_field" defaultValue={s.date_field||"created_at"}><option value="created_at">{tr("الإنشاء")}</option><option value="due_at">{tr("الاستحقاق")}</option><option value="closed_at">{tr("الإغلاق")}</option></Select></label><label className="form-field">{tr("من")}<Input type="date" name="from" className="input" defaultValue={s.from||""}/></label><label className="form-field">{tr("إلى")}<Input type="date" name="to" className="input" defaultValue={s.to||""}/></label></div></details><div style={{display:"flex",gap:10,flexWrap:"wrap"}}><Button className="button alt">{tr("تطبيق الفلاتر")}</Button><Link className="button outline" href="/app/tasks">{tr("مسح الفلاتر")}</Link><Link className="button outline" href="/app/tasks?shared=1">{tr("المهام المشتركة")}</Link></div></form>
- {error&&<div className="notice warning">{tr("تعذر تحميل المهام.")}</div>}
- <TaskList locale={locale} items={items.map(t=>({...t,clientName:t.client_id?names.get(t.client_id)||null:null,memberCount:counts.get(t.id)||0}))}/></>;
+import Link from 'next/link';
+import {TaskList} from '@/components/task-list';
+import {TaskFilters} from '@/components/task-filters';
+import {workspaceI18n} from '@/lib/workspace-locale';
+import {requireUser} from '@/lib/auth';
+import {parseFilters,pageNumber,filterUrl} from '@/lib/analytics/filters';
+import {taskPage} from '@/lib/analytics/queries';
+export default async function TasksPage({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}){
+ const {locale,t}=await workspaceI18n(),{db,profile}=await requireUser(),raw=await searchParams,f=parseFilters(raw),page=pageNumber(raw.page),ar=locale==='ar';
+ const [{data:profiles},{data:clients},{data:selected},{data:types}]=await Promise.all([db.from('profiles').select('id,full_name').order('full_name'),db.from('clients').select('id,name').order('name').limit(50),f.client_id?db.from('clients').select('id,name').eq('id',f.client_id).maybeSingle():Promise.resolve({data:null}),db.from('task_types').select('id,name_ar,name_en').order('name_ar')]);
+ let result:Awaited<ReturnType<typeof taskPage>>|null=null;try{result=await taskPage(db,f,page);}catch{/* Never display a failed query as zero tasks. */}
+ return <><div className="title-row"><div><span className="eyebrow">TASKS</span><h1>{t('إدارة المهام')}</h1><p className="muted">{ar?'فلاتر دقيقة، خطوات واضحة، ومتابعة في مكان واحد.':'Precise filters, clear steps, and one place to follow up.'}</p></div>{profile.role==='supervisor'&&<Link className="button" href="/app/tasks/new">{t('+ مهمة جديدة')}</Link>}</div>
+ <TaskFilters key={JSON.stringify(f)} locale={locale} filters={f} profiles={profiles||[]} clients={clients||[]} selected={selected} types={types||[]} userId={profile.id}/>
+ {result?<><p role="status" className="muted">{ar?`${result.total} نتيجة · صفحة ${page}`:`${result.total} results · Page ${page}`}</p><TaskList locale={locale} items={result.items}/><nav className="filter-actions" aria-label={ar?'صفحات النتائج':'Result pages'}>{page>1&&<Link className="button outline" href={filterUrl('/app/tasks',f,{page:String(page-1)})}>{ar?'السابق':'Previous'}</Link>}{page*25<result.total&&<Link className="button outline" href={filterUrl('/app/tasks',f,{page:String(page+1)})}>{ar?'التالي':'Next'}</Link>}</nav></>:<div className="notice warning" role="alert">{ar?'تعذر تحميل المهام. تحقق من الاتصال وتفعيل ترحيل التحليلات المعتمد.':'Tasks could not be loaded. Check connectivity and the approved analytics migration.'}</div>}</>;
 }

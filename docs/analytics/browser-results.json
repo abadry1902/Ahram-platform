@@ -1,0 +1,650 @@
+[
+  {
+    "view": "dashboard-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "dashboard-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "dashboard-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "dashboard-employee-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "dashboard-employee-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "dashboard-employee-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-new-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-new-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-new-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-detail-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-detail-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-detail-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-detail-employee-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-detail-employee-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-detail-employee-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "archive-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "archive-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "archive-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "calendar-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "calendar-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "calendar-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "reports-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "reports-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "reports-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "reports-detail-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "reports-detail-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "reports-detail-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "team-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "team-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "team-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "content-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "content-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "content-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "content-detail-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "content-detail-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "content-detail-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "links-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "links-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "links-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "templates-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "templates-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "templates-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "notifications-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "notifications-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "notifications-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "import-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "import-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "import-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "settings-supervisor-ar",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "settings-supervisor-ar",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "settings-supervisor-ar",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "dashboard-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "dashboard-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "dashboard-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "dashboard-employee-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "dashboard-employee-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "dashboard-employee-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-new-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-new-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-new-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-detail-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-detail-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-detail-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-detail-employee-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-detail-employee-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "tasks-detail-employee-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "archive-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "archive-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "archive-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "calendar-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "calendar-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "calendar-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "reports-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "reports-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "reports-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "reports-detail-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "reports-detail-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "reports-detail-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "team-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "team-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "team-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "content-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "content-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "content-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "content-detail-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "content-detail-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "content-detail-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "links-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "links-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "links-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "templates-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "templates-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "templates-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "notifications-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "notifications-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "notifications-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "import-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "import-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "import-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "settings-supervisor-en",
+    "size": "desktop",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "settings-supervisor-en",
+    "size": "tablet",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  },
+  {
+    "view": "settings-supervisor-en",
+    "size": "mobile",
+    "overflow": false,
+    "mode": "real-component-render/synthetic-fixtures/actions-disconnected"
+  }
+]
