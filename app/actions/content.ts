@@ -3,8 +3,8 @@ import {revalidatePath} from "next/cache";
 import {redirect} from "next/navigation";
 import {requireUser,requireSupervisor} from "@/lib/auth";
 import {z} from "zod";
-const schema=z.object({slug:z.string().trim().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).max(100),category:z.string().trim().min(2).max(50),title_ar:z.string().trim().min(5).max(200),title_en:z.string().trim().max(200),excerpt_ar:z.string().trim().max(500),excerpt_en:z.string().trim().max(500),body_ar:z.string().trim().min(10).max(30000),body_en:z.string().trim().max(30000)});
-function parse(form:FormData){return schema.safeParse(Object.fromEntries(["slug","category","title_ar","title_en","excerpt_ar","excerpt_en","body_ar","body_en"].map(k=>[k,String(form.get(k)||"").trim()])));}
+const schema=z.object({slug:z.string().trim().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).max(100),category:z.string().trim().min(1).max(50),categories:z.array(z.string().trim().min(1).max(50)).min(1).max(20),image_url:z.union([z.string().url().startsWith("https://").max(2048),z.null()]),title_ar:z.string().trim().min(5).max(200),title_en:z.string().trim().max(200),excerpt_ar:z.string().trim().max(500),excerpt_en:z.string().trim().max(500),body_ar:z.string().trim().min(10).max(30000),body_en:z.string().trim().max(30000)});
+function parse(form:FormData){const categories=[...new Set(form.getAll("categories").map(String).map(s=>s.trim()).filter(Boolean))];return schema.safeParse({...Object.fromEntries(["slug","title_ar","title_en","excerpt_ar","excerpt_en","body_ar","body_en"].map(k=>[k,String(form.get(k)||"").trim()])),category:categories[0]||"general",categories:categories.length?categories:["general"],image_url:String(form.get("image_url")||"").trim()||null});}
 export async function createArticle(form:FormData){
  const {db,profile,user}=await requireUser();if(profile.role==="employee")redirect("/app");
  const parsed=parse(form);if(!parsed.success)redirect("/app/content?error=validation");

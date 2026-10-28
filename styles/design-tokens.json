@@ -1,0 +1,69 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "meta": {
+    "name": "AL AHRAM Premium V4",
+    "direction": "Modern Architectural Legal / Soft Editorial",
+    "note": "Logo is supplied as reference extraction; obtain original transparent master before production."
+  },
+  "color": {
+    "brand": {
+      "primary": "#1546A0",
+      "accent": "#F47B35",
+      "support": "#3578E5",
+      "navy": "#0B2F56"
+    },
+    "surface": {
+      "canvas": "#FAFAF7",
+      "paper": "#FFFFFF",
+      "ice": "#E8F0FC",
+      "peach": "#FFE3D0",
+      "input": "#F0F3F8"
+    },
+    "text": {
+      "primary": "#0B2F56",
+      "secondary": "#53647B"
+    },
+    "border": {
+      "subtle": "#DCE5F0"
+    }
+  },
+  "typography": {
+    "arabic": "Cairo",
+    "english": "Montserrat",
+    "body_ar": {
+      "fontSize": 17,
+      "lineHeight": 1.85
+    },
+    "body_en": {
+      "fontSize": 16,
+      "lineHeight": 1.65
+    },
+    "heading_ar": {
+      "lineHeight": 1.4
+    },
+    "heading_en": {
+      "lineHeight": 1.18
+    }
+  },
+  "layout": {
+    "maxWidth": 1240,
+    "baseSpacing": 8,
+    "sectionDesktop": 96,
+    "sectionMobile": 56,
+    "gridColumnsDesktop": 12
+  },
+  "radius": {
+    "button": 12,
+    "input": 12,
+    "card": 24,
+    "hero": 28,
+    "badge": 999
+  },
+  "motion": {
+    "revealMs": 520,
+    "staggerMs": 90,
+    "hoverMs": 180,
+    "translateY": 18,
+    "reducedMotion": "disable"
+  }
+}

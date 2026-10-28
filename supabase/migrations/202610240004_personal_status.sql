@@ -5,7 +5,7 @@ alter table public.task_assignments
  add column if not exists pause_reason text;
 
 create or replace function public.lock_assignment_columns() returns trigger
-language plpgsql security definer set search_path=public,pg_temp as $$
+language plpgsql security definer set search_path='' as $$
 declare parent_status text;
 begin
  if old.user_id is distinct from new.user_id or old.task_id is distinct from new.task_id then
@@ -22,7 +22,7 @@ begin
 end; $$;
 
 create or replace function public.log_assignment_change() returns trigger
-language plpgsql security definer set search_path=public,pg_temp as $$
+language plpgsql security definer set search_path='' as $$
 begin
  if old.progress is distinct from new.progress or old.status is distinct from new.status then
   insert into public.task_activity(task_id,actor_id,action,payload)
@@ -33,3 +33,5 @@ begin
 end; $$;
 create trigger assignment_changed after update on public.task_assignments
  for each row execute function public.log_assignment_change();
+
+revoke all on function public.log_assignment_change() from public,anon,authenticated;

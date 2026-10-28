@@ -13,7 +13,9 @@ export async function inviteTeamMember(form:FormData){
  if(!url||!key)redirect("/app/team?error=admin_config");
  // Service-role client never leaves the server, and this action checks the supervisor's session first.
  const admin=createAdminClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
- const {data,error}=await admin.auth.admin.inviteUserByEmail(p.data.email,{data:{full_name:p.data.full_name}});
+ const siteUrl=process.env.NEXT_PUBLIC_SITE_URL;
+ if(!siteUrl||!siteUrl.startsWith("https://"))redirect("/app/team?error=admin_config");
+ const {data,error}=await admin.auth.admin.inviteUserByEmail(p.data.email,{data:{full_name:p.data.full_name},redirectTo:new URL("/auth/confirm",siteUrl).href});
  if(error||!data.user)redirect("/app/team?error=invite");
  const {error:roleError}=await admin.from("profiles").update({full_name:p.data.full_name,role:p.data.role}).eq("id",data.user.id);
  if(roleError)redirect("/app/team?error=profile");

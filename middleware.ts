@@ -35,4 +35,4 @@ export async function middleware(request: NextRequest) {
   await supabase.auth.getUser();
   return response;
 }
-export const config = {matcher:["/app/:path*","/login"]};
+export const config = {matcher:["/app/:path*","/login","/auth/:path*"]};

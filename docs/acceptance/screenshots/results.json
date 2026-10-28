@@ -1,0 +1,674 @@
+[
+  {
+    "locale": "ar",
+    "width": 320,
+    "focus": "header",
+    "route": "/ar",
+    "name": "header-ar-320.jpg",
+    "layout": {
+      "client": 305,
+      "scroll": 305
+    },
+    "logos": [
+      {
+        "height": 55.953125,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 150
+      },
+      {
+        "height": 74.609375,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 200
+      }
+    ]
+  },
+  {
+    "locale": "ar",
+    "width": 320,
+    "focus": "footer",
+    "route": "/ar",
+    "name": "footer-ar-320.jpg",
+    "layout": {
+      "client": 305,
+      "scroll": 305
+    },
+    "logos": [
+      {
+        "height": 55.953125,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 150
+      },
+      {
+        "height": 74.609375,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 200
+      }
+    ]
+  },
+  {
+    "locale": "ar",
+    "width": 320,
+    "focus": "login",
+    "route": "/login?locale=ar",
+    "name": "login-ar-320.jpg",
+    "layout": {
+      "client": 305,
+      "scroll": 305
+    },
+    "logos": [
+      {
+        "height": 70.875,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_White_and_Orange.png",
+        "width": 190
+      }
+    ]
+  },
+  {
+    "locale": "ar",
+    "width": 320,
+    "focus": "sidebar",
+    "route": "/__v4_review/dashboard-supervisor-ar.html",
+    "name": "sidebar-ar-320.jpg",
+    "layout": {
+      "client": 305,
+      "scroll": 305
+    },
+    "logos": [
+      {
+        "height": 61.921875,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_White_and_Orange.png",
+        "width": 166
+      }
+    ]
+  },
+  {
+    "locale": "ar",
+    "width": 768,
+    "focus": "header",
+    "route": "/ar",
+    "name": "header-ar-768.jpg",
+    "layout": {
+      "client": 753,
+      "scroll": 753
+    },
+    "logos": [
+      {
+        "height": 68.640625,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 184
+      },
+      {
+        "height": 80.578125,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 216
+      }
+    ]
+  },
+  {
+    "locale": "ar",
+    "width": 768,
+    "focus": "footer",
+    "route": "/ar",
+    "name": "footer-ar-768.jpg",
+    "layout": {
+      "client": 753,
+      "scroll": 753
+    },
+    "logos": [
+      {
+        "height": 68.640625,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 184
+      },
+      {
+        "height": 80.578125,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 216
+      }
+    ]
+  },
+  {
+    "locale": "ar",
+    "width": 768,
+    "focus": "login",
+    "route": "/login?locale=ar",
+    "name": "login-ar-768.jpg",
+    "layout": {
+      "client": 768,
+      "scroll": 768
+    },
+    "logos": [
+      {
+        "height": 85.796875,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_White_and_Orange.png",
+        "width": 230
+      }
+    ]
+  },
+  {
+    "locale": "ar",
+    "width": 768,
+    "focus": "sidebar",
+    "route": "/__v4_review/dashboard-supervisor-ar.html",
+    "name": "sidebar-ar-768.jpg",
+    "layout": {
+      "client": 753,
+      "scroll": 753
+    },
+    "logos": [
+      {
+        "height": 65.65625,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_White_and_Orange.png",
+        "width": 176
+      }
+    ]
+  },
+  {
+    "locale": "ar",
+    "width": 1440,
+    "focus": "header",
+    "route": "/ar",
+    "name": "header-ar-1440.jpg",
+    "layout": {
+      "client": 1424,
+      "scroll": 1424
+    },
+    "logos": [
+      {
+        "height": 68.63903045654297,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 183.994873046875
+      },
+      {
+        "height": 80.57410430908203,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 215.98680114746097
+      }
+    ]
+  },
+  {
+    "locale": "ar",
+    "width": 1440,
+    "focus": "footer",
+    "route": "/ar",
+    "name": "footer-ar-1440.jpg",
+    "layout": {
+      "client": 1424,
+      "scroll": 1424
+    },
+    "logos": [
+      {
+        "height": 68.63903045654297,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 183.994873046875
+      },
+      {
+        "height": 80.57410430908203,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 215.98680114746097
+      }
+    ]
+  },
+  {
+    "locale": "ar",
+    "width": 1440,
+    "focus": "login",
+    "route": "/login?locale=ar",
+    "name": "login-ar-1440.jpg",
+    "layout": {
+      "client": 1424,
+      "scroll": 1424
+    },
+    "logos": [
+      {
+        "height": 85.79053497314453,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_White_and_Orange.png",
+        "width": 229.98533630371097
+      }
+    ]
+  },
+  {
+    "locale": "ar",
+    "width": 1440,
+    "focus": "sidebar",
+    "route": "/__v4_review/dashboard-supervisor-ar.html",
+    "name": "sidebar-ar-1440.jpg",
+    "layout": {
+      "client": 1424,
+      "scroll": 1424
+    },
+    "logos": [
+      {
+        "height": 65.65113830566406,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_White_and_Orange.png",
+        "width": 175.98863220214844
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "width": 320,
+    "focus": "header",
+    "route": "/en",
+    "name": "header-en-320.jpg",
+    "layout": {
+      "client": 305,
+      "scroll": 305
+    },
+    "logos": [
+      {
+        "height": 55.953125,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 150
+      },
+      {
+        "height": 74.609375,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 200
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "width": 320,
+    "focus": "footer",
+    "route": "/en",
+    "name": "footer-en-320.jpg",
+    "layout": {
+      "client": 305,
+      "scroll": 305
+    },
+    "logos": [
+      {
+        "height": 55.953125,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 150
+      },
+      {
+        "height": 74.609375,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 200
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "width": 320,
+    "focus": "login",
+    "route": "/login?locale=en",
+    "name": "login-en-320.jpg",
+    "layout": {
+      "client": 305,
+      "scroll": 305
+    },
+    "logos": [
+      {
+        "height": 70.875,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_White_and_Orange.png",
+        "width": 190
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "width": 320,
+    "focus": "sidebar",
+    "route": "/__v4_review/dashboard-supervisor-en.html",
+    "name": "sidebar-en-320.jpg",
+    "layout": {
+      "client": 305,
+      "scroll": 305
+    },
+    "logos": [
+      {
+        "height": 61.921875,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_White_and_Orange.png",
+        "width": 166
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "width": 768,
+    "focus": "header",
+    "route": "/en",
+    "name": "header-en-768.jpg",
+    "layout": {
+      "client": 753,
+      "scroll": 753
+    },
+    "logos": [
+      {
+        "height": 68.640625,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 184
+      },
+      {
+        "height": 80.578125,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 216
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "width": 768,
+    "focus": "footer",
+    "route": "/en",
+    "name": "footer-en-768.jpg",
+    "layout": {
+      "client": 753,
+      "scroll": 753
+    },
+    "logos": [
+      {
+        "height": 68.640625,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 184
+      },
+      {
+        "height": 80.578125,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 216
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "width": 768,
+    "focus": "login",
+    "route": "/login?locale=en",
+    "name": "login-en-768.jpg",
+    "layout": {
+      "client": 768,
+      "scroll": 768
+    },
+    "logos": [
+      {
+        "height": 85.796875,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_White_and_Orange.png",
+        "width": 230
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "width": 768,
+    "focus": "sidebar",
+    "route": "/__v4_review/dashboard-supervisor-en.html",
+    "name": "sidebar-en-768.jpg",
+    "layout": {
+      "client": 753,
+      "scroll": 753
+    },
+    "logos": [
+      {
+        "height": 65.65625,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_White_and_Orange.png",
+        "width": 176
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "width": 1440,
+    "focus": "header",
+    "route": "/en",
+    "name": "header-en-1440.jpg",
+    "layout": {
+      "client": 1424,
+      "scroll": 1424
+    },
+    "logos": [
+      {
+        "height": 68.63903045654297,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 183.994873046875
+      },
+      {
+        "height": 80.57410430908203,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 215.98680114746097
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "width": 1440,
+    "focus": "footer",
+    "route": "/en",
+    "name": "footer-en-1440.jpg",
+    "layout": {
+      "client": 1424,
+      "scroll": 1424
+    },
+    "logos": [
+      {
+        "height": 68.63903045654297,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 183.994873046875
+      },
+      {
+        "height": 80.57410430908203,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_Brand_Full_Color.png",
+        "width": 215.98680114746097
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "width": 1440,
+    "focus": "login",
+    "route": "/login?locale=en",
+    "name": "login-en-1440.jpg",
+    "layout": {
+      "client": 1424,
+      "scroll": 1424
+    },
+    "logos": [
+      {
+        "height": 85.79053497314453,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_White_and_Orange.png",
+        "width": 229.98533630371097
+      }
+    ]
+  },
+  {
+    "locale": "en",
+    "width": 1440,
+    "focus": "sidebar",
+    "route": "/__v4_review/dashboard-supervisor-en.html",
+    "name": "sidebar-en-1440.jpg",
+    "layout": {
+      "client": 1424,
+      "scroll": 1424
+    },
+    "logos": [
+      {
+        "height": 65.65113830566406,
+        "loaded": true,
+        "natural": [
+          1544,
+          576
+        ],
+        "src": "/brand/AL_AHRAM_Horizontal_White_and_Orange.png",
+        "width": 175.98863220214844
+      }
+    ]
+  }
+]
